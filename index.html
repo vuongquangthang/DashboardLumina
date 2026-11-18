@@ -1,0 +1,2166 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lumina Beach Hotel — Dashboard Hiệu Quả Truyền Thông & Đặt Phòng (Mùa Hè 2026)</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js & Annotation Plugin -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3.0.1/dist/chartjs-plugin-annotation.min.js"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Google Font: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+                    },
+                    colors: {
+                        ocean: {
+                            50: '#f0fdfa',
+                            100: '#ccfbf1',
+                            500: '#14b8a6',
+                            600: '#0d9488',
+                            700: '#0f766e',
+                            900: '#134e4a',
+                        },
+                        navy: {
+                            800: '#1e293b',
+                            900: '#0f172a',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+            color: #0f172a;
+        }
+        /* Custom scrollbar for tables */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 999px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 999px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+        .card-hover {
+            transition: transform 0.18s ease, box-shadow 0.18s ease;
+        }
+        .card-hover:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.08), 0 8px 10px -6px rgba(15, 23, 42, 0.04);
+        }
+        .filter-pill-active {
+            background-color: #0f172a !important;
+            color: #ffffff !important;
+            border-color: #0f172a !important;
+        }
+        .sortable-th {
+            cursor: pointer;
+            user-select: none;
+        }
+        .sortable-th:hover {
+            background-color: #f1f5f9;
+        }
+    </style>
+</head>
+<body class="antialiased selection:bg-teal-100 selection:text-teal-900">
+
+    <!-- ==================== TOP NAVIGATION & HEADER ==================== -->
+    <header class="bg-slate-900 text-white sticky top-0 z-40 shadow-md border-b border-slate-800">
+        <div class="max-w-[1480px] mx-auto px-4 sm:px-6 lg:px-8 py-3.5">
+            <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
+                <!-- Brand & Title -->
+                <div class="flex items-center gap-3.5">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-teal-400 to-cyan-600 flex items-center justify-center shadow-lg shrink-0">
+                        <i data-lucide="waves" class="w-5 h-5 text-white"></i>
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-2 flex-wrap">
+                            <h1 class="text-base sm:text-lg font-bold tracking-tight text-white">
+                                Lumina Beach Hotel — Đà Nẵng
+                            </h1>
+                            <span class="px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wider bg-teal-500/20 text-teal-300 border border-teal-500/30 rounded-full">
+                                Mùa Hè 2026
+                            </span>
+                        </div>
+                        <p class="text-xs text-slate-400 mt-0.5">
+                            Dashboard Hiệu Quả Truyền Thông (FB & TikTok), Meta Ads & Chuyển Đổi Đặt Phòng • 01/05 – 31/08/2026
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Right Controls: Data Rule Info & Reset -->
+                <div class="flex items-center gap-2.5 flex-wrap">
+                    <button id="btnRulesModal" type="button"
+                        class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-slate-200 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-lg transition">
+                        <i data-lucide="shield-check" class="w-3.5 h-3.5 text-teal-400"></i>
+                        Quy tắc tính số liệu
+                    </button>
+                    <button id="btnResetFilters" type="button"
+                        class="inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-semibold text-slate-900 bg-teal-400 hover:bg-teal-300 rounded-lg transition shadow-sm">
+                        <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
+                        Đặt lại bộ lọc
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- ==================== MAIN CONTAINER ==================== -->
+    <main class="max-w-[1480px] mx-auto px-4 sm:px-6 lg:px-8 py-5 space-y-6">
+
+        <!-- ==================== FILTER BAR ==================== -->
+        <section class="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-4 space-y-3.5">
+            <div class="flex flex-col xl:flex-row xl:items-center justify-between gap-3.5">
+                <!-- Quick Month Selector -->
+                <div class="flex flex-wrap items-center gap-1.5">
+                    <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider mr-1.5 flex items-center gap-1">
+                        <i data-lucide="calendar" class="w-3.5 h-3.5"></i> Thời gian:
+                    </span>
+                    <button data-month="ALL" class="month-pill filter-pill-active px-3 py-1.5 text-xs font-semibold rounded-lg border border-slate-200 text-slate-700 hover:bg-slate-50 transition">
+                        Toàn mùa hè
+                    </button>
+                    <button data-month="5" class="month-pill px-3 py-1.5 text-xs font-semibold rounded-lg border border-slate-200 text-slate-700 hover:bg-slate-50 transition">
+                        Tháng 5
+                    </button>
+                    <button data-month="6" class="month-pill px-3 py-1.5 text-xs font-semibold rounded-lg border border-slate-200 text-slate-700 hover:bg-slate-50 transition">
+                        Tháng 6
+                    </button>
+                    <button data-month="7" class="month-pill px-3 py-1.5 text-xs font-semibold rounded-lg border border-slate-200 text-slate-700 hover:bg-slate-50 transition">
+                        Tháng 7
+                    </button>
+                    <button data-month="8" class="month-pill px-3 py-1.5 text-xs font-semibold rounded-lg border border-slate-200 text-slate-700 hover:bg-slate-50 transition">
+                        Tháng 8
+                    </button>
+                </div>
+
+                <!-- Custom Date Range Picker -->
+                <div class="flex flex-wrap items-center gap-2 text-xs">
+                    <div class="flex items-center gap-1.5 bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5">
+                        <span class="text-slate-500 font-medium">Từ:</span>
+                        <input id="filterStartDate" type="date" min="2026-05-01" max="2026-08-31" value="2026-05-01"
+                            class="bg-transparent font-semibold text-slate-800 focus:outline-none">
+                    </div>
+                    <span class="text-slate-400">→</span>
+                    <div class="flex items-center gap-1.5 bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5">
+                        <span class="text-slate-500 font-medium">Đến:</span>
+                        <input id="filterEndDate" type="date" min="2026-05-01" max="2026-08-31" value="2026-08-31"
+                            class="bg-transparent font-semibold text-slate-800 focus:outline-none">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Segment Filters Row -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-3 border-t border-slate-100">
+                <!-- Source Filter -->
+                <div>
+                    <label for="filterSource" class="block text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1">
+                        Nguồn đặt phòng
+                    </label>
+                    <select id="filterSource"
+                        class="w-full text-xs font-semibold text-slate-800 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-teal-500/30 focus:border-teal-500">
+                        <option value="ALL">Tất cả nguồn (Quảng cáo Meta + Tự nhiên)</option>
+                        <option value="ADS">Chỉ Quảng cáo Meta (03_QC_theo_ngay_nhom)</option>
+                        <option value="ORGANIC">Chỉ Tự nhiên (04_Dat_phong_tu_nhien)</option>
+                    </select>
+                </div>
+
+                <!-- Campaign Filter (Full names from 05_Danh_muc) -->
+                <div>
+                    <label for="filterCampaign" class="block text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1">
+                        Chiến dịch Meta Ads (05_Danh_muc)
+                    </label>
+                    <select id="filterCampaign"
+                        class="w-full text-xs font-semibold text-slate-800 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-teal-500/30 focus:border-teal-500">
+                        <option value="ALL">Tất cả 3 chiến dịch mùa hè</option>
+                        <option value="HE_SOM">Hè sớm — Chào Hè Sớm & Early Bird Đà Nẵng (05/05 – 05/06)</option>
+                        <option value="CAO_DIEM">Cao điểm hè — Bùng Nổ Cao Điểm Hè & Combo Biển (06/06 – 31/07)</option>
+                        <option value="CUOI_HE">Cuối hè — Ưu Đãi Cuối Hè Gia Đình & Cặp Đôi (01/08 – 31/08)</option>
+                    </select>
+                </div>
+
+                <!-- Ad Set Filter -->
+                <div>
+                    <label for="filterAdSet" class="block text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1">
+                        Nhóm quảng cáo (Ad Set)
+                    </label>
+                    <select id="filterAdSet"
+                        class="w-full text-xs font-semibold text-slate-800 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-teal-500/30 focus:border-teal-500">
+                        <option value="ALL">Tất cả 3 nhóm quảng cáo</option>
+                        <option value="Gia đình">Gia đình (Khách gia đình có trẻ nhỏ 30–50t)</option>
+                        <option value="Advantage+">Advantage+ (Tự động mở rộng đối tượng Meta)</option>
+                        <option value="Nữ 25-44">Nữ 25-44 (Nhóm ra quyết định du lịch nghỉ dưỡng)</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Active Cross-Filter Banner (Hidden by default) -->
+            <div id="activeFilterBanner" class="hidden flex flex-wrap items-center justify-between gap-2 bg-teal-50 border border-teal-200/80 text-teal-900 rounded-xl px-3.5 py-2 text-xs">
+                <div class="flex items-center gap-2 flex-wrap">
+                    <i data-lucide="filter" class="w-3.5 h-3.5 text-teal-600 shrink-0"></i>
+                    <span class="font-semibold">Đang áp dụng bộ lọc:</span>
+                    <div id="activeFilterChips" class="flex flex-wrap gap-1.5"></div>
+                </div>
+                <button id="btnClearChips" class="text-teal-700 hover:text-teal-950 font-semibold underline underline-offset-2">
+                    Xóa lọc
+                </button>
+            </div>
+        </section>
+
+        <!-- ==================== TIER 1: TOP KPI CARDS ==================== -->
+        <section aria-label="Tầng 1 - Tổng quan nhanh">
+            <div class="flex items-center justify-between mb-3">
+                <div class="flex items-center gap-2">
+                    <span class="w-1.5 h-5 rounded-full bg-teal-600"></span>
+                    <h2 class="text-sm font-bold text-slate-800 uppercase tracking-wide">
+                        Tầng 1 — Tổng quan nhanh KPI cốt lõi (Đối chiếu 07_Muc_tieu)
+                    </h2>
+                </div>
+                <span id="dateRangeBadge" class="text-xs font-medium text-slate-500 bg-white border border-slate-200 px-2.5 py-1 rounded-lg">
+                    01/05/2026 – 31/08/2026 (123 ngày)
+                </span>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+                <!-- KPI 1: Tổng doanh thu đặt phòng -->
+                <div class="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-sm card-hover flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-start justify-between gap-2">
+                            <div>
+                                <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Tổng doanh thu đặt phòng</p>
+                                <h3 id="kpiTotalRev" class="text-2xl sm:text-[26px] font-extrabold text-slate-900 mt-1 tracking-tight">0 ₫</h3>
+                            </div>
+                            <div class="w-10 h-10 rounded-xl bg-teal-50 text-teal-600 flex items-center justify-center shrink-0">
+                                <i data-lucide="banknote" class="w-5 h-5"></i>
+                            </div>
+                        </div>
+
+                        <!-- Target Progress -->
+                        <div class="mt-3">
+                            <div class="flex items-center justify-between text-xs mb-1">
+                                <span id="kpiRevTargetPct" class="font-bold text-teal-700">0% mục tiêu</span>
+                                <span id="kpiRevVariance" class="text-slate-500 font-medium">Mục tiêu: 0 ₫</span>
+                            </div>
+                            <div class="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
+                                <div id="kpiRevBar" class="h-full bg-gradient-to-r from-teal-500 to-emerald-500 rounded-full transition-all duration-500" style="width: 0%"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Source Split & AOV -->
+                    <div class="mt-4 pt-3 border-t border-slate-100 space-y-2">
+                        <div class="flex items-center justify-between text-[11px] font-medium">
+                            <span class="flex items-center gap-1.5 text-teal-700">
+                                <span class="w-2 h-2 rounded-full bg-teal-500"></span>
+                                QC Meta: <strong id="kpiRevAdsShare">0%</strong>
+                            </span>
+                            <span class="flex items-center gap-1.5 text-amber-700">
+                                <span class="w-2 h-2 rounded-full bg-amber-500"></span>
+                                Tự nhiên: <strong id="kpiRevOrgShare">0%</strong>
+                            </span>
+                        </div>
+                        <div class="w-full h-1.5 bg-amber-400 rounded-full overflow-hidden flex">
+                            <div id="kpiRevSplitBar" class="h-full bg-teal-500 transition-all duration-500" style="width: 50%"></div>
+                        </div>
+                        <div class="flex items-center justify-between text-xs text-slate-600 pt-0.5">
+                            <span>AOV (Giá trị TB/đơn):</span>
+                            <strong id="kpiAOV" class="text-slate-900">0 ₫</strong>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- KPI 2: Tổng lượt đặt phòng & CIR -->
+                <div class="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-sm card-hover flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-start justify-between gap-2">
+                            <div>
+                                <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Tổng lượt đặt phòng</p>
+                                <h3 id="kpiTotalBookings" class="text-2xl sm:text-[26px] font-extrabold text-slate-900 mt-1 tracking-tight">0</h3>
+                            </div>
+                            <div class="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center shrink-0">
+                                <i data-lucide="bed-double" class="w-5 h-5"></i>
+                            </div>
+                        </div>
+
+                        <!-- Target Progress -->
+                        <div class="mt-3">
+                            <div class="flex items-center justify-between text-xs mb-1">
+                                <span id="kpiBookTargetPct" class="font-bold text-indigo-700">0% mục tiêu</span>
+                                <span id="kpiBookVariance" class="text-slate-500 font-medium">Mục tiêu: 0 đơn</span>
+                            </div>
+                            <div class="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
+                                <div id="kpiBookBar" class="h-full bg-gradient-to-r from-indigo-500 to-blue-500 rounded-full transition-all duration-500" style="width: 0%"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Source Split & CIR -->
+                    <div class="mt-4 pt-3 border-t border-slate-100 space-y-2">
+                        <div class="flex items-center justify-between text-[11px] font-medium">
+                            <span class="text-teal-700">QC Meta: <strong id="kpiBookAds">0</strong> đơn (<span id="kpiBookAdsShare">0%</span>)</span>
+                            <span class="text-amber-700">Tự nhiên: <strong id="kpiBookOrg">0</strong> đơn (<span id="kpiBookOrgShare">0%</span>)</span>
+                        </div>
+                        <div class="flex items-center justify-between text-xs bg-slate-50 rounded-lg px-2.5 py-1.5 border border-slate-100">
+                            <span class="text-slate-600 font-medium" title="Chi phí QC ÷ Tổng doanh thu toàn khách sạn">CIR (Chi phí QC / Tổng DT):</span>
+                            <strong id="kpiCIR" class="text-slate-900">0.0%</strong>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- KPI 3: Tổng chi phí QC Meta -->
+                <div class="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-sm card-hover flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-start justify-between gap-2">
+                            <div>
+                                <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Tổng chi phí QC Meta</p>
+                                <h3 id="kpiAdSpend" class="text-2xl sm:text-[26px] font-extrabold text-slate-900 mt-1 tracking-tight">0 ₫</h3>
+                            </div>
+                            <div class="w-10 h-10 rounded-xl bg-cyan-50 text-cyan-600 flex items-center justify-center shrink-0">
+                                <i data-lucide="megaphone" class="w-5 h-5"></i>
+                            </div>
+                        </div>
+
+                        <!-- Budget Target -->
+                        <div class="mt-3">
+                            <div class="flex items-center justify-between text-xs mb-1">
+                                <span id="kpiSpendTargetPct" class="font-bold text-cyan-700">0% ngân sách</span>
+                                <span id="kpiSpendTarget" class="text-slate-500 font-medium">Kế hoạch: 0 ₫</span>
+                            </div>
+                            <div class="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
+                                <div id="kpiSpendBar" class="h-full bg-gradient-to-r from-cyan-500 to-sky-500 rounded-full transition-all duration-500" style="width: 0%"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 pt-3 border-t border-slate-100 grid grid-cols-2 gap-2 text-xs">
+                        <div class="bg-slate-50 rounded-lg p-2 border border-slate-100">
+                            <p class="text-[11px] text-slate-500">CP / Trò chuyện đủ ĐK</p>
+                            <p id="kpiCostPerQualChat" class="font-bold text-slate-900 mt-0.5">0 ₫</p>
+                        </div>
+                        <div class="bg-slate-50 rounded-lg p-2 border border-slate-100">
+                            <p class="text-[11px] text-slate-500">Tổng trò chuyện QC</p>
+                            <p id="kpiAdsChats" class="font-bold text-slate-900 mt-0.5">0</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- KPI 4: ROAS Quảng cáo Meta -->
+                <div class="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-sm card-hover flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-start justify-between gap-2">
+                            <div>
+                                <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider">ROAS Quảng cáo Meta</p>
+                                <div class="flex items-baseline gap-2 mt-1">
+                                    <h3 id="kpiROAS" class="text-2xl sm:text-[26px] font-extrabold text-slate-900 tracking-tight">0.00x</h3>
+                                    <span id="kpiROASBadge" class="px-2 py-0.5 text-[11px] font-bold rounded-full bg-emerald-50 text-emerald-700">--</span>
+                                </div>
+                            </div>
+                            <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
+                                <i data-lucide="trending-up" class="w-5 h-5"></i>
+                            </div>
+                        </div>
+                        <p id="kpiROASTargetText" class="text-xs text-slate-500 mt-2">
+                            Mục tiêu kế hoạch: <strong>0.0x</strong>
+                        </p>
+                    </div>
+
+                    <div class="mt-4 pt-3 border-t border-slate-100 grid grid-cols-2 gap-2 text-xs">
+                        <div class="bg-slate-50 rounded-lg p-2 border border-slate-100">
+                            <p class="text-[11px] text-slate-500">Doanh thu từ QC Meta</p>
+                            <p id="kpiAdsRev" class="font-bold text-teal-700 mt-0.5">0 ₫</p>
+                        </div>
+                        <div class="bg-slate-50 rounded-lg p-2 border border-slate-100">
+                            <p class="text-[11px] text-slate-500">CTR Quảng cáo (Tổng)</p>
+                            <p id="kpiAdsCTR" class="font-bold text-slate-900 mt-0.5">0.00%</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- KPI 5: Tỷ lệ chốt đơn / Trò chuyện đủ điều kiện -->
+                <div class="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-sm card-hover flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-start justify-between gap-2">
+                            <div>
+                                <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Tỷ lệ chốt / Trò chuyện đủ ĐK</p>
+                                <div class="flex items-baseline gap-2 mt-1">
+                                    <h3 id="kpiCloseRate" class="text-2xl sm:text-[26px] font-extrabold text-slate-900 tracking-tight">0.0%</h3>
+                                    <span id="kpiCloseRateBadge" class="px-2 py-0.5 text-[11px] font-bold rounded-full bg-amber-50 text-amber-700">--</span>
+                                </div>
+                            </div>
+                            <div class="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center shrink-0">
+                                <i data-lucide="message-square-check" class="w-5 h-5"></i>
+                            </div>
+                        </div>
+                        <p id="kpiQualChatSummary" class="text-xs text-slate-500 mt-2">
+                            Tổng trò chuyện đủ ĐK: <strong class="text-slate-700">0</strong>
+                        </p>
+                    </div>
+
+                    <div class="mt-4 pt-3 border-t border-slate-100 grid grid-cols-2 gap-2 text-xs">
+                        <div class="bg-teal-50/70 rounded-lg p-2 border border-teal-100">
+                            <p class="text-[11px] text-teal-700 font-medium">Chốt đơn — QC Meta</p>
+                            <p id="kpiCloseAds" class="font-bold text-teal-900 mt-0.5">0.0%</p>
+                        </div>
+                        <div class="bg-amber-50/70 rounded-lg p-2 border border-amber-100">
+                            <p class="text-[11px] text-amber-700 font-medium">Chốt đơn — Tự nhiên</p>
+                            <p id="kpiCloseOrg" class="font-bold text-amber-900 mt-0.5">0.0%</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- KPI 6: Truyền thông tự nhiên (TÁCH RIÊNG FB & TikTok) -->
+                <div class="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-sm card-hover flex flex-col justify-between">
+                    <div class="flex items-center justify-between gap-2 mb-2.5">
+                        <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Truyền thông tự nhiên (Tách kênh)</p>
+                        <span class="px-2 py-0.5 text-[10px] font-semibold bg-slate-100 text-slate-600 rounded-md">Không cộng gộp</span>
+                    </div>
+
+                    <div class="space-y-2.5">
+                        <!-- Facebook Row -->
+                        <div class="bg-blue-50/60 border border-blue-100 rounded-xl p-2.5">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs font-bold text-blue-900 flex items-center gap-1.5">
+                                    <span class="w-2 h-2 rounded-full bg-blue-600"></span> Facebook Trang
+                                </span>
+                                <span id="kpiFbEngRate" class="text-[11px] font-semibold text-blue-700 bg-white px-2 py-0.5 rounded-full border border-blue-100">
+                                    Tương tác: 0.0%
+                                </span>
+                            </div>
+                            <div class="flex items-baseline justify-between mt-1">
+                                <span id="kpiFbViews" class="text-lg font-extrabold text-slate-900">0</span>
+                                <span class="text-[11px] text-slate-600">
+                                    +<strong id="kpiFbFollows" class="text-blue-700">0</strong> theo dõi mới
+                                </span>
+                            </div>
+                            <div class="text-[10.5px] text-slate-500 mt-1 flex items-center justify-between">
+                                <span>Người xem duy nhất (06_Thang):</span>
+                                <strong id="kpiFbUniqueMonth" class="text-slate-700">--</strong>
+                            </div>
+                        </div>
+
+                        <!-- TikTok Row -->
+                        <div class="bg-rose-50/60 border border-rose-100 rounded-xl p-2.5">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs font-bold text-rose-900 flex items-center gap-1.5">
+                                    <span class="w-2 h-2 rounded-full bg-rose-500"></span> TikTok Video
+                                </span>
+                                <span id="kpiTtEngRate" class="text-[11px] font-semibold text-rose-700 bg-white px-2 py-0.5 rounded-full border border-rose-100">
+                                    Tương tác: 0.0%
+                                </span>
+                            </div>
+                            <div class="flex items-baseline justify-between mt-1">
+                                <span id="kpiTtViews" class="text-lg font-extrabold text-slate-900">0</span>
+                                <span id="kpiTtTargetBadge" class="text-[11px] font-semibold text-rose-700">0% MT</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== TIER 2: TREND ANALYSIS ==================== -->
+        <section aria-label="Tầng 2 - Xu hướng theo thời gian" class="space-y-3">
+            <div class="flex items-center gap-2">
+                <span class="w-1.5 h-5 rounded-full bg-indigo-600"></span>
+                <h2 class="text-sm font-bold text-slate-800 uppercase tracking-wide">
+                    Tầng 2 — Phân tích xu hướng theo thời gian
+                </h2>
+            </div>
+
+            <div class="grid grid-cols-1 xl:grid-cols-12 gap-5">
+                <!-- Chart 1: Combo Chart (Stacked Revenue + Target Line) -->
+                <div class="xl:col-span-7 bg-white rounded-2xl border border-slate-200/80 shadow-sm p-5 flex flex-col">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
+                        <div>
+                            <h3 class="text-sm font-bold text-slate-900">
+                                Doanh thu đặt phòng theo nguồn vs Mục tiêu (07_Muc_tieu)
+                            </h3>
+                            <p class="text-xs text-slate-500 mt-0.5">
+                                Bấm vào cột <strong>Tháng</strong> để lọc chéo toàn bộ Dashboard • Tách màu QC Meta & Tự nhiên
+                            </p>
+                        </div>
+                        <div class="inline-flex bg-slate-100 p-1 rounded-xl shrink-0 self-start">
+                            <button id="btnGranMonth" class="px-3 py-1 text-xs font-semibold rounded-lg bg-white text-slate-900 shadow-sm transition">
+                                Theo Tháng
+                            </button>
+                            <button id="btnGranWeek" class="px-3 py-1 text-xs font-semibold rounded-lg text-slate-600 hover:text-slate-900 transition">
+                                Theo Tuần
+                            </button>
+                        </div>
+                    </div>
+                    <div class="relative w-full h-[320px]">
+                        <canvas id="revenueComboChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Chart 2: Multi-line Organic Views (FB vs TikTok with July Spike Annotations) -->
+                <div class="xl:col-span-5 bg-white rounded-2xl border border-slate-200/80 shadow-sm p-5 flex flex-col">
+                    <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-2 mb-4">
+                        <div>
+                            <h3 class="text-sm font-bold text-slate-900">
+                                Lượt xem tự nhiên hằng ngày: Facebook vs TikTok
+                            </h3>
+                            <p class="text-xs text-slate-500 mt-0.5">
+                                Hai trục tung tách biệt (Trái: Lượt xem trang FB • Phải: Lượt xem video TikTok)
+                            </p>
+                        </div>
+                        <span class="px-2.5 py-1 text-[11px] font-semibold bg-rose-50 text-rose-700 border border-rose-200 rounded-lg shrink-0">
+                            Đỉnh viral Tháng 7
+                        </span>
+                    </div>
+                    <div class="relative w-full h-[320px]">
+                        <canvas id="organicTrendChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== TIER 3: DIAGNOSTIC BREAKDOWN ==================== -->
+        <section aria-label="Tầng 3 - Chẩn đoán chuyên sâu" class="space-y-3">
+            <div class="flex items-center gap-2">
+                <span class="w-1.5 h-5 rounded-full bg-amber-500"></span>
+                <h2 class="text-sm font-bold text-slate-800 uppercase tracking-wide">
+                    Tầng 3 — Chẩn đoán phễu chuyển đổi & Hiệu suất phân khúc Meta Ads
+                </h2>
+            </div>
+
+            <div class="grid grid-cols-1 xl:grid-cols-12 gap-5">
+                <!-- Left: Conversion Funnel Comparison (Ads vs Organic) -->
+                <div class="xl:col-span-5 bg-white rounded-2xl border border-slate-200/80 shadow-sm p-5 flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-start justify-between gap-2 mb-4">
+                            <div>
+                                <h3 class="text-sm font-bold text-slate-900">
+                                    Phễu chuyển đổi: Quảng cáo Meta vs Tự nhiên
+                                </h3>
+                                <p class="text-xs text-slate-500 mt-0.5">
+                                    Nhận diện điểm nghẽn từ Tin nhắn → Trò chuyện đủ điều kiện → Chốt phòng
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Interactive Visual Funnel Container -->
+                        <div id="funnelContainer" class="space-y-4">
+                            <!-- Rendered dynamically via JS -->
+                        </div>
+                    </div>
+
+                    <!-- Dynamic Funnel Insight Box -->
+                    <div id="funnelInsightBox" class="mt-5 p-3.5 rounded-xl bg-amber-50/80 border border-amber-200/80 text-xs text-amber-950 leading-relaxed">
+                        <!-- Rendered dynamically -->
+                    </div>
+                </div>
+
+                <!-- Right: Grouped Horizontal Bar (Ad Sets / Campaigns) -->
+                <div class="xl:col-span-7 bg-white rounded-2xl border border-slate-200/80 shadow-sm p-5 flex flex-col">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
+                        <div>
+                            <h3 class="text-sm font-bold text-slate-900">
+                                So sánh hiệu suất phân khúc Meta Ads
+                            </h3>
+                            <p class="text-xs text-slate-500 mt-0.5">
+                                Bấm vào thanh biểu đồ để lọc chéo theo Nhóm quảng cáo hoặc Chiến dịch
+                            </p>
+                        </div>
+                        <div class="inline-flex bg-slate-100 p-1 rounded-xl shrink-0 self-start">
+                            <button id="btnDimAdSet" class="px-3 py-1 text-xs font-semibold rounded-lg bg-white text-slate-900 shadow-sm transition">
+                                3 Nhóm QC
+                            </button>
+                            <button id="btnDimCampaign" class="px-3 py-1 text-xs font-semibold rounded-lg text-slate-600 hover:text-slate-900 transition">
+                                3 Chiến dịch
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="relative w-full h-[310px]">
+                        <canvas id="segmentBarChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Detailed Sortable Diagnostic Table -->
+            <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+                <div class="p-5 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div>
+                        <h3 class="text-sm font-bold text-slate-900">
+                            Bảng chẩn đoán chi tiết Chiến dịch & Nhóm quảng cáo Meta
+                        </h3>
+                        <p class="text-xs text-slate-500 mt-0.5">
+                            Bấm vào tiêu đề cột để sắp xếp tăng/giảm dần • Bấm vào dòng để lọc chéo Dashboard
+                        </p>
+                    </div>
+                    <div class="inline-flex bg-slate-100 p-1 rounded-xl self-start">
+                        <button id="btnTableAdSet" class="px-3 py-1 text-xs font-semibold rounded-lg bg-white text-slate-900 shadow-sm transition">
+                            Theo Nhóm QC
+                        </button>
+                        <button id="btnTableCampaign" class="px-3 py-1 text-xs font-semibold rounded-lg text-slate-600 hover:text-slate-900 transition">
+                            Theo Chiến dịch
+                        </button>
+                        <button id="btnTableCombined" class="px-3 py-1 text-xs font-semibold rounded-lg text-slate-600 hover:text-slate-900 transition">
+                            Chi tiết Tổ hợp
+                        </button>
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-slate-50/90 border-b border-slate-200 text-[11px] font-bold text-slate-500 uppercase tracking-wider">
+                                <th class="py-3 px-4 sortable-th" data-sort="name">Phân khúc <span class="sort-icon ml-1">↕</span></th>
+                                <th class="py-3 px-4 text-right sortable-th" data-sort="spend">Chi phí QC <span class="sort-icon ml-1">↕</span></th>
+                                <th class="py-3 px-4 text-right sortable-th" data-sort="qualChats">Trò chuyện đủ ĐK <span class="sort-icon ml-1">↕</span></th>
+                                <th class="py-3 px-4 text-right sortable-th" data-sort="cpqc">CP / TC đủ ĐK <span class="sort-icon ml-1">↕</span></th>
+                                <th class="py-3 px-4 text-right sortable-th" data-sort="bookings">Đặt phòng <span class="sort-icon ml-1">↕</span></th>
+                                <th class="py-3 px-4 text-right sortable-th" data-sort="closeRate">Tỷ lệ chốt <span class="sort-icon ml-1">↕</span></th>
+                                <th class="py-3 px-4 text-right sortable-th" data-sort="revenue">Doanh thu QC <span class="sort-icon ml-1">↕</span></th>
+                                <th class="py-3 px-4 text-right sortable-th" data-sort="roas">ROAS <span class="sort-icon ml-1">↕</span></th>
+                            </tr>
+                        </thead>
+                        <tbody id="diagnosticTableBody" class="divide-y divide-slate-100 text-xs">
+                            <!-- Populated via JS -->
+                        </tbody>
+                        <tfoot id="diagnosticTableFoot" class="bg-slate-50 font-bold text-xs border-t-2 border-slate-200">
+                            <!-- Populated via JS -->
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== EXECUTIVE DECISION RECOMMENDATIONS ==================== -->
+        <section class="bg-gradient-to-br from-slate-900 via-slate-900 to-teal-950 text-white rounded-2xl p-5 sm:p-6 shadow-md">
+            <div class="flex items-center gap-2.5 mb-4">
+                <div class="w-8 h-8 rounded-lg bg-teal-500/20 border border-teal-400/30 flex items-center justify-center">
+                    <i data-lucide="sparkles" class="w-4 h-4 text-teal-300"></i>
+                </div>
+                <div>
+                    <h2 class="text-sm font-bold tracking-wide uppercase text-teal-300">
+                        Khuyến nghị hành động cho Ban Giám đốc & Trưởng phòng Marketing
+                    </h2>
+                    <p class="text-xs text-slate-400">Tự động cập nhật dựa trên khoảng thời gian và phân khúc đang lọc</p>
+                </div>
+            </div>
+            <div id="executiveInsightsGrid" class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs leading-relaxed">
+                <!-- Populated dynamically via JS -->
+            </div>
+        </section>
+
+    </main>
+
+    <!-- ==================== FOOTER ==================== -->
+    <footer class="max-w-[1480px] mx-auto px-4 sm:px-6 lg:px-8 py-6 text-center text-xs text-slate-400">
+        Lumina Beach Hotel Đà Nẵng • Hệ thống Báo cáo Quản trị Truyền thông & Đặt phòng Mùa Hè 2026 • Tính toán chuẩn Tổng tử số ÷ Tổng mẫu số
+    </footer>
+
+    <!-- ==================== DATA RULES MODAL ==================== -->
+    <div id="rulesModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4">
+        <div class="bg-white rounded-2xl max-w-xl w-full shadow-2xl border border-slate-200 overflow-hidden">
+            <div class="px-5 py-4 bg-slate-900 text-white flex items-center justify-between">
+                <h3 class="text-sm font-bold flex items-center gap-2">
+                    <i data-lucide="shield-check" class="w-4 h-4 text-teal-400"></i>
+                    Quy tắc xử lý & Tính toán số liệu bắt buộc
+                </h3>
+                <button id="btnCloseRules" class="text-slate-400 hover:text-white transition">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+            <div class="p-5 space-y-3 text-xs text-slate-600 leading-relaxed">
+                <div class="p-3 bg-teal-50 border border-teal-100 rounded-xl text-teal-900">
+                    <strong>1. Chỉ số tỷ lệ chuẩn xác (Weighted Ratio):</strong> Mọi chỉ số tỷ lệ (CTR, Tỷ lệ tương tác, Tỷ lệ chốt đơn, ROAS, CIR, AOV, Chi phí/TC đủ ĐK) đều được tính bằng <em>Tổng tử số ÷ Tổng mẫu số</em> của khoảng thời gian đang lọc — tuyệt đối không lấy trung bình cộng theo ngày.
+                </div>
+                <div class="p-3 bg-blue-50 border border-blue-100 rounded-xl text-blue-900">
+                    <strong>2. Người xem duy nhất Facebook:</strong> Không cộng dồn cột Người xem theo ngày ở <code>01_FB_theo_ngay</code>; Dashboard sử dụng trực tiếp số liệu từ sheet <code>06_Nguoi_xem_theo_thang</code>.
+                </div>
+                <div class="p-3 bg-rose-50 border border-rose-100 rounded-xl text-rose-900">
+                    <strong>3. Tách biệt kênh tự nhiên:</strong> Lượt xem trang Facebook và Lượt xem video TikTok luôn được tách riêng ở cả KPI Card và biểu đồ xu hướng (hai trục tung riêng biệt), không cộng gộp.
+                </div>
+                <div class="p-3 bg-amber-50 border border-amber-100 rounded-xl text-amber-900">
+                    <strong>4. Hợp nhất đặt phòng & Phạm vi ngày:</strong> Tổng đặt phòng và Tổng doanh thu = Quảng cáo Meta (<code>03_QC_theo_ngay_nhom</code>, từ 05/05–31/08) + Tự nhiên (<code>04_Dat_phong_tu_nhien</code>, từ 01/05–31/08).
+                </div>
+            </div>
+            <div class="px-5 py-3 bg-slate-50 border-t border-slate-100 flex justify-end">
+                <button id="btnCloseRulesFooter" class="px-4 py-1.5 text-xs font-semibold bg-slate-900 text-white rounded-lg hover:bg-slate-800 transition">
+                    Đã hiểu
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== JAVASCRIPT APPLICATION ==================== -->
+    <script>
+        /* =========================================================================
+           1. DATASET GENERATION (8 SHEETS MODEL FOR LUMINA BEACH HOTEL - SUMMER 2026)
+           Deterministic seeded generator producing realistic, internally consistent
+           daily records from 2026-05-01 to 2026-08-31 (Ads: 2026-05-05 to 2026-08-31).
+           ========================================================================= */
+
+        // Seeded PRNG (Mulberry32) so numbers are 100% consistent on every reload
+        function mulberry32(seed) {
+            return function() {
+                let t = seed += 0x6D2B79F5;
+                t = Math.imul(t ^ (t >>> 15), t | 1);
+                t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+                return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+            };
+        }
+        const rand = mulberry32(20260501);
+        const randRange = (min, max) => min + rand() * (max - min);
+
+        // Sheet 05_Danh_muc: Campaign & Ad Set Master Catalog
+        const SHEET_05_DANH_MUC = {
+            campaigns: {
+                'HE_SOM': {
+                    code: 'HE_SOM',
+                    shortName: 'Hè sớm',
+                    fullName: 'Hè sớm — Chào Hè Sớm & Early Bird Đà Nẵng',
+                    start: '2026-05-05',
+                    end: '2026-06-05'
+                },
+                'CAO_DIEM': {
+                    code: 'CAO_DIEM',
+                    shortName: 'Cao điểm hè',
+                    fullName: 'Cao điểm hè — Bùng Nổ Cao Điểm Hè & Combo Biển',
+                    start: '2026-06-06',
+                    end: '2026-07-31'
+                },
+                'CUOI_HE': {
+                    code: 'CUOI_HE',
+                    shortName: 'Cuối hè',
+                    fullName: 'Cuối hè — Ưu Đãi Cuối Hè Gia Đình & Cặp Đôi',
+                    start: '2026-08-01',
+                    end: '2026-08-31'
+                }
+            },
+            adSets: ['Gia đình', 'Advantage+', 'Nữ 25-44']
+        };
+
+        // Sheet 06_Nguoi_xem_theo_thang: Monthly Unique Facebook Viewers (NEVER summed from daily)
+        const SHEET_06_NGUOI_XEM_THANG = {
+            5: 72400,
+            6: 98600,
+            7: 164200,
+            8: 108500
+        };
+
+        // Sheet 07_Muc_tieu: Monthly Business, Ads & Organic Targets
+        const SHEET_07_MUC_TIEU = {
+            5: {
+                days: 31,
+                revenue: 680000000,
+                bookings: 160,
+                adSpend: 34000000,
+                roas: 9.5,
+                closeRate: 0.21,
+                fbViews: 115000,
+                ttViews: 260000
+            },
+            6: {
+                days: 30,
+                revenue: 880000000,
+                bookings: 205,
+                adSpend: 44000000,
+                roas: 10.5,
+                closeRate: 0.22,
+                fbViews: 150000,
+                ttViews: 380000
+            },
+            7: {
+                days: 31,
+                revenue: 1120000000,
+                bookings: 255,
+                adSpend: 52000000,
+                roas: 11.0,
+                closeRate: 0.23,
+                fbViews: 210000,
+                ttViews: 620000
+            },
+            8: {
+                days: 31,
+                revenue: 820000000,
+                bookings: 195,
+                adSpend: 40000000,
+                roas: 10.0,
+                closeRate: 0.21,
+                fbViews: 145000,
+                ttViews: 360000
+            }
+        };
+
+        // Generate daily date list: 2026-05-01 to 2026-08-31
+        function buildDateList(startStr, endStr) {
+            const dates = [];
+            const cur = new Date(startStr + 'T00:00:00');
+            const end = new Date(endStr + 'T00:00:00');
+            while (cur <= end) {
+                const y = cur.getFullYear();
+                const m = String(cur.getMonth() + 1).padStart(2, '0');
+                const d = String(cur.getDate()).padStart(2, '0');
+                dates.push({
+                    iso: `${y}-${m}-${d}`,
+                    month: cur.getMonth() + 1,
+                    dayOfWeek: cur.getDay() // 0 Sun .. 6 Sat
+                });
+                cur.setDate(cur.getDate() + 1);
+            }
+            return dates;
+        }
+
+        const ALL_DATES = buildDateList('2026-05-01', '2026-08-31');
+
+        // Sheet 01_FB_theo_ngay, Sheet 02_TikTok_theo_ngay, Sheet 03_QC_theo_ngay_nhom, Sheet 04_Dat_phong_tu_nhien
+        const SHEET_01_FB = [];
+        const SHEET_02_TIKTOK = [];
+        const SHEET_03_ADS = [];
+        const SHEET_04_ORGANIC = [];
+
+        function getCampaignForDate(iso) {
+            if (iso < '2026-05-05') return null;
+            if (iso <= '2026-06-05') return 'HE_SOM';
+            if (iso <= '2026-07-31') return 'CAO_DIEM';
+            return 'CUOI_HE';
+        }
+
+        // Populate all daily datasets
+        ALL_DATES.forEach(({ iso, month, dayOfWeek }) => {
+            const isWeekend = (dayOfWeek === 0 || dayOfWeek === 5 || dayOfWeek === 6);
+            const weekendBoost = isWeekend ? 1.22 : 1.0;
+
+            // Seasonal multiplier by month
+            const seasonMult = month === 5 ? 0.85 : month === 6 ? 1.12 : month === 7 ? 1.38 : 0.96;
+
+            // Viral spikes in July (08/07: Reel Hồ bơi vô cực; 19/07: Sunset BBQ & Flash Sale)
+            let fbViralMult = 1.0;
+            let ttViralMult = 1.0;
+            if (iso === '2026-07-07') { fbViralMult = 1.5; ttViralMult = 1.9; }
+            if (iso === '2026-07-08') { fbViralMult = 2.65; ttViralMult = 3.8; }
+            if (iso === '2026-07-09') { fbViralMult = 1.85; ttViralMult = 2.4; }
+            if (iso === '2026-07-18') { fbViralMult = 1.4; ttViralMult = 1.7; }
+            if (iso === '2026-07-19') { fbViralMult = 2.3; ttViralMult = 3.35; }
+            if (iso === '2026-07-20') { fbViralMult = 1.6; ttViralMult = 2.1; }
+
+            // 1. Sheet 01_FB_theo_ngay
+            const fbViews = Math.round(4200 * seasonMult * weekendBoost * fbViralMult * randRange(0.86, 1.16));
+            const fbEngagements = Math.round(fbViews * randRange(0.044, 0.064) * (fbViralMult > 1.5 ? 1.15 : 1.0));
+            const fbNewFollows = Math.round(fbViews * randRange(0.0085, 0.0135));
+            SHEET_01_FB.push({
+                date: iso,
+                month,
+                views: fbViews,
+                engagements: fbEngagements,
+                newFollows: fbNewFollows
+            });
+
+            // 2. Sheet 02_TikTok_theo_ngay
+            const ttViews = Math.round(10800 * seasonMult * weekendBoost * ttViralMult * randRange(0.78, 1.24));
+            const ttEngagements = Math.round(ttViews * randRange(0.068, 0.098) * (ttViralMult > 1.8 ? 1.12 : 1.0));
+            SHEET_02_TIKTOK.push({
+                date: iso,
+                month,
+                views: ttViews,
+                engagements: ttEngagements
+            });
+
+            // 3. Sheet 04_Dat_phong_tu_nhien (Organic bookings from FB/TikTok chats)
+            const orgChats = Math.round(14 * seasonMult * weekendBoost * (fbViralMult > 1.5 ? 1.35 : 1.0) * randRange(0.82, 1.20));
+            const orgQualChats = Math.round(orgChats * randRange(0.58, 0.68));
+            const orgBookings = Math.max(1, Math.round(orgQualChats * randRange(0.25, 0.33)));
+            const orgAOV = randRange(3950000, 4450000) * (month === 7 ? 1.06 : 1.0);
+            const orgRevenue = Math.round(orgBookings * orgAOV / 10000) * 10000;
+            SHEET_04_ORGANIC.push({
+                date: iso,
+                month,
+                chats: orgChats,
+                qualChats: orgQualChats,
+                bookings: orgBookings,
+                revenue: orgRevenue
+            });
+
+            // 4. Sheet 03_QC_theo_ngay_nhom (Meta Ads from 2026-05-05 to 2026-08-31)
+            const campaign = getCampaignForDate(iso);
+            if (campaign) {
+                const adSetConfigs = [
+                    {
+                        name: 'Gia đình',
+                        spendBase: 480000,
+                        ctrRange: [0.025, 0.032],
+                        cpmRange: [48000, 58000],
+                        chatPerClick: 0.24,
+                        qualRate: [0.55, 0.63],
+                        closeRate: [0.22, 0.28],
+                        aovRange: [4650000, 5200000]
+                    },
+                    {
+                        name: 'Nữ 25-44',
+                        spendBase: 450000,
+                        ctrRange: [0.027, 0.035],
+                        cpmRange: [44000, 54000],
+                        chatPerClick: 0.25,
+                        qualRate: [0.50, 0.58],
+                        closeRate: [0.19, 0.24],
+                        aovRange: [3750000, 4250000]
+                    },
+                    {
+                        name: 'Advantage+',
+                        spendBase: 420000,
+                        ctrRange: [0.021, 0.028],
+                        cpmRange: [36000, 46000],
+                        chatPerClick: 0.27,
+                        qualRate: [0.34, 0.42],
+                        closeRate: [0.11, 0.16],
+                        aovRange: [3450000, 3950000]
+                    }
+                ];
+
+                adSetConfigs.forEach(cfg => {
+                    const spend = Math.round(cfg.spendBase * seasonMult * (isWeekend ? 1.12 : 0.97) * randRange(0.88, 1.14) / 1000) * 1000;
+                    const cpm = randRange(cfg.cpmRange[0], cfg.cpmRange[1]);
+                    const impressions = Math.round((spend / cpm) * 1000);
+                    const ctr = randRange(cfg.ctrRange[0], cfg.ctrRange[1]);
+                    const clicks = Math.round(impressions * ctr);
+                    const chats = Math.max(2, Math.round(clicks * cfg.chatPerClick * randRange(0.88, 1.12)));
+                    const qualChats = Math.max(1, Math.round(chats * randRange(cfg.qualRate[0], cfg.qualRate[1])));
+                    const bookings = Math.round(qualChats * randRange(cfg.closeRate[0], cfg.closeRate[1]));
+                    const aov = randRange(cfg.aovRange[0], cfg.aovRange[1]) * (month === 7 ? 1.05 : 1.0);
+                    const revenue = bookings > 0 ? Math.round(bookings * aov / 10000) * 10000 : 0;
+
+                    SHEET_03_ADS.push({
+                        date: iso,
+                        month,
+                        campaign,
+                        adSet: cfg.name,
+                        spend,
+                        impressions,
+                        clicks,
+                        chats,
+                        qualChats,
+                        bookings,
+                        revenue
+                    });
+                });
+            }
+        });
+
+        /* =========================================================================
+           2. APPLICATION STATE & FORMATTING HELPERS
+           ========================================================================= */
+        const state = {
+            monthQuick: 'ALL',          // 'ALL', '5', '6', '7', '8'
+            startDate: '2026-05-01',
+            endDate: '2026-08-31',
+            source: 'ALL',              // 'ALL', 'ADS', 'ORGANIC'
+            campaign: 'ALL',            // 'ALL', 'HE_SOM', 'CAO_DIEM', 'CUOI_HE'
+            adSet: 'ALL',               // 'ALL', 'Gia đình', 'Advantage+', 'Nữ 25-44'
+            trendGranularity: 'MONTH',  // 'MONTH', 'WEEK'
+            barDimension: 'ADSET',      // 'ADSET', 'CAMPAIGN'
+            tableMode: 'ADSET',         // 'ADSET', 'CAMPAIGN', 'COMBINED'
+            sortCol: 'roas',
+            sortDir: 'desc'
+        };
+
+        // Formatting utilities
+        function fmtVND(val, compact = false) {
+            if (val === null || val === undefined || isNaN(val)) return '—';
+            const abs = Math.abs(val);
+            const sign = val < 0 ? '-' : '';
+            if (compact) {
+                if (abs >= 1e9) return `${sign}${(abs / 1e9).toFixed(2)} tỷ`;
+                if (abs >= 1e6) return `${sign}${(abs / 1e6).toFixed(1)} tr`;
+                if (abs >= 1e3) return `${sign}${(abs / 1e3).toFixed(0)}k`;
+            }
+            return sign + Math.round(abs).toLocaleString('vi-VN') + ' ₫';
+        }
+        function fmtNum(val, compact = false) {
+            if (val === null || val === undefined || isNaN(val)) return '—';
+            if (compact) {
+                if (val >= 1e6) return (val / 1e6).toFixed(2) + 'M';
+                if (val >= 1e3) return (val / 1e3).toFixed(1) + 'K';
+            }
+            return Math.round(val).toLocaleString('vi-VN');
+        }
+        function fmtPct(ratio, digits = 1) {
+            if (ratio === null || ratio === undefined || !isFinite(ratio)) return '—';
+            return (ratio * 100).toFixed(digits) + '%';
+        }
+        function fmtDateVN(iso) {
+            const [y, m, d] = iso.split('-');
+            return `${d}/${m}/${y}`;
+        }
+
+        /* =========================================================================
+           3. FILTERING & WEIGHTED AGGREGATION ENGINE (SUM / SUM RULE)
+           ========================================================================= */
+        function getFilteredData() {
+            const { startDate, endDate, source, campaign, adSet } = state;
+
+            // Determine if Organic should be included
+            // Note: If user filters specifically by a Meta Campaign or Ad Set, Organic records don't belong to Ads.
+            const hasAdsSegmentFilter = (campaign !== 'ALL' || adSet !== 'ALL');
+            const includeAds = (source === 'ALL' || source === 'ADS');
+            const includeOrganic = (source === 'ALL' || source === 'ORGANIC') && !hasAdsSegmentFilter;
+
+            const adsRows = includeAds
+                ? SHEET_03_ADS.filter(r =>
+                    r.date >= startDate && r.date <= endDate &&
+                    (campaign === 'ALL' || r.campaign === campaign) &&
+                    (adSet === 'ALL' || r.adSet === adSet)
+                )
+                : [];
+
+            const orgRows = includeOrganic
+                ? SHEET_04_ORGANIC.filter(r => r.date >= startDate && r.date <= endDate)
+                : [];
+
+            const fbRows = SHEET_01_FB.filter(r => r.date >= startDate && r.date <= endDate);
+            const ttRows = SHEET_02_TIKTOK.filter(r => r.date >= startDate && r.date <= endDate);
+
+            // Compute prorated targets from 07_Muc_tieu for the selected date range
+            const daysInRangeByMonth = { 5: 0, 6: 0, 7: 0, 8: 0 };
+            ALL_DATES.forEach(d => {
+                if (d.iso >= startDate && d.iso <= endDate) {
+                    daysInRangeByMonth[d.month]++;
+                }
+            });
+
+            const target = {
+                revenue: 0, bookings: 0, adSpend: 0, fbViews: 0, ttViews: 0,
+                roasWeightedNum: 0, roasWeightedDen: 0,
+                closeRateWeightedNum: 0, closeRateWeightedDen: 0
+            };
+
+            const activeMonths = [];
+            [5, 6, 7, 8].forEach(m => {
+                if (daysInRangeByMonth[m] > 0) {
+                    activeMonths.push(m);
+                    const ratio = daysInRangeByMonth[m] / SHEET_07_MUC_TIEU[m].days;
+                    const t = SHEET_07_MUC_TIEU[m];
+                    target.revenue += t.revenue * ratio;
+                    target.bookings += t.bookings * ratio;
+                    target.adSpend += t.adSpend * ratio;
+                    target.fbViews += t.fbViews * ratio;
+                    target.ttViews += t.ttViews * ratio;
+                    target.roasWeightedNum += (t.adSpend * ratio) * t.roas;
+                    target.roasWeightedDen += (t.adSpend * ratio);
+                    target.closeRateWeightedNum += (t.bookings * ratio) * t.closeRate;
+                    target.closeRateWeightedDen += (t.bookings * ratio);
+                }
+            });
+
+            target.roas = target.roasWeightedDen > 0 ? target.roasWeightedNum / target.roasWeightedDen : 10.0;
+            target.closeRate = target.closeRateWeightedDen > 0 ? target.closeRateWeightedNum / target.closeRateWeightedDen : 0.22;
+
+            // Aggregate Totals (STRICTLY SUM OF NUMERATORS / SUM OF DENOMINATORS)
+            const adsSpend = adsRows.reduce((s, r) => s + r.spend, 0);
+            const adsImp = adsRows.reduce((s, r) => s + r.impressions, 0);
+            const adsClicks = adsRows.reduce((s, r) => s + r.clicks, 0);
+            const adsChats = adsRows.reduce((s, r) => s + r.chats, 0);
+            const adsQualChats = adsRows.reduce((s, r) => s + r.qualChats, 0);
+            const adsBookings = adsRows.reduce((s, r) => s + r.bookings, 0);
+            const adsRev = adsRows.reduce((s, r) => s + r.revenue, 0);
+
+            const orgChats = orgRows.reduce((s, r) => s + r.chats, 0);
+            const orgQualChats = orgRows.reduce((s, r) => s + r.qualChats, 0);
+            const orgBookings = orgRows.reduce((s, r) => s + r.bookings, 0);
+            const orgRev = orgRows.reduce((s, r) => s + r.revenue, 0);
+
+            const totalRev = adsRev + orgRev;
+            const totalBookings = adsBookings + orgBookings;
+            const totalChats = adsChats + orgChats;
+            const totalQualChats = adsQualChats + orgQualChats;
+
+            const fbViews = fbRows.reduce((s, r) => s + r.views, 0);
+            const fbEng = fbRows.reduce((s, r) => s + r.engagements, 0);
+            const fbFollows = fbRows.reduce((s, r) => s + r.newFollows, 0);
+
+            const ttViews = ttRows.reduce((s, r) => s + r.views, 0);
+            const ttEng = ttRows.reduce((s, r) => s + r.engagements, 0);
+
+            const totalDays = Object.values(daysInRangeByMonth).reduce((a, b) => a + b, 0);
+
+            return {
+                adsRows, orgRows, fbRows, ttRows,
+                activeMonths, totalDays, includeAds, includeOrganic, hasAdsSegmentFilter,
+                target,
+                kpi: {
+                    totalRev, totalBookings, totalChats, totalQualChats,
+                    adsSpend, adsImp, adsClicks, adsChats, adsQualChats, adsBookings, adsRev,
+                    orgChats, orgQualChats, orgBookings, orgRev,
+                    // Ratio metrics strictly computed as Sum(Num) / Sum(Den)
+                    aov: totalBookings > 0 ? totalRev / totalBookings : 0,
+                    cir: totalRev > 0 ? adsSpend / totalRev : 0,
+                    roas: adsSpend > 0 ? adsRev / adsSpend : null,
+                    adsCtr: adsImp > 0 ? adsClicks / adsImp : 0,
+                    costPerQualChat: adsQualChats > 0 ? adsSpend / adsQualChats : null,
+                    closeRateTotal: totalQualChats > 0 ? totalBookings / totalQualChats : 0,
+                    closeRateAds: adsQualChats > 0 ? adsBookings / adsQualChats : null,
+                    closeRateOrg: orgQualChats > 0 ? orgBookings / orgQualChats : null,
+                    fbViews, fbFollows,
+                    fbEngRate: fbViews > 0 ? fbEng / fbViews : 0,
+                    ttViews,
+                    ttEngRate: ttViews > 0 ? ttEng / ttViews : 0
+                }
+            };
+        }
+
+        /* =========================================================================
+           4. RENDER FUNCTIONS FOR ALL 3 TIERS
+           ========================================================================= */
+        let revenueChartInstance = null;
+        let organicChartInstance = null;
+        let segmentBarChartInstance = null;
+
+        function renderDashboard() {
+            const data = getFilteredData();
+            renderFilterBanner(data);
+            renderTier1KPIs(data);
+            renderRevenueComboChart(data);
+            renderOrganicTrendChart(data);
+            renderFunnelComparison(data);
+            renderSegmentBarChart(data);
+            renderDiagnosticTable(data);
+            renderExecutiveInsights(data);
+            lucide.createIcons();
+        }
+
+        // Render active cross-filter banner
+        function renderFilterBanner(data) {
+            const chips = [];
+            if (state.monthQuick !== 'ALL') {
+                chips.push(`Tháng ${state.monthQuick}/2026`);
+            } else if (state.startDate !== '2026-05-01' || state.endDate !== '2026-08-31') {
+                chips.push(`${fmtDateVN(state.startDate)} → ${fmtDateVN(state.endDate)}`);
+            }
+            if (state.source !== 'ALL') {
+                chips.push(`Nguồn: ${state.source === 'ADS' ? 'Quảng cáo Meta' : 'Tự nhiên'}`);
+            }
+            if (state.campaign !== 'ALL') {
+                chips.push(`Chiến dịch: ${SHEET_05_DANH_MUC.campaigns[state.campaign].shortName}`);
+            }
+            if (state.adSet !== 'ALL') {
+                chips.push(`Nhóm QC: ${state.adSet}`);
+            }
+
+            const banner = document.getElementById('activeFilterBanner');
+            const chipBox = document.getElementById('activeFilterChips');
+            if (chips.length > 0) {
+                banner.classList.remove('hidden');
+                let html = chips.map(c =>
+                    `<span class="px-2 py-0.5 bg-white border border-teal-200 text-teal-800 font-semibold rounded-md">${c}</span>`
+                ).join('');
+                if (data.hasAdsSegmentFilter && state.source === 'ALL') {
+                    html += `<span class="text-[11px] text-teal-700 italic ml-1">(Đang lọc theo phân khúc Meta Ads — số liệu Tự nhiên tạm ẩn)</span>`;
+                }
+                chipBox.innerHTML = html;
+            } else {
+                banner.classList.add('hidden');
+            }
+
+            document.getElementById('dateRangeBadge').textContent =
+                `${fmtDateVN(state.startDate)} – ${fmtDateVN(state.endDate)} (${data.totalDays} ngày)`;
+        }
+
+        // TIER 1: KPI Cards
+        function renderTier1KPIs(data) {
+            const { kpi, target, activeMonths } = data;
+
+            // 1. Total Revenue
+            document.getElementById('kpiTotalRev').textContent = fmtVND(kpi.totalRev);
+            const revPct = target.revenue > 0 ? (kpi.totalRev / target.revenue) * 100 : 0;
+            const revDiff = kpi.totalRev - target.revenue;
+            document.getElementById('kpiRevTargetPct').textContent = `${revPct.toFixed(1)}% mục tiêu`;
+            document.getElementById('kpiRevTargetPct').className = `font-bold ${revPct >= 100 ? 'text-emerald-600' : 'text-amber-600'}`;
+            document.getElementById('kpiRevVariance').textContent =
+                `MT: ${fmtVND(target.revenue, true)} (${revDiff >= 0 ? '+' : ''}${fmtVND(revDiff, true)})`;
+            document.getElementById('kpiRevBar').style.width = `${Math.min(100, revPct)}%`;
+
+            const adsRevShare = kpi.totalRev > 0 ? (kpi.adsRev / kpi.totalRev) * 100 : 0;
+            const orgRevShare = kpi.totalRev > 0 ? (kpi.orgRev / kpi.totalRev) * 100 : 0;
+            document.getElementById('kpiRevAdsShare').textContent = `${adsRevShare.toFixed(1)}%`;
+            document.getElementById('kpiRevOrgShare').textContent = `${orgRevShare.toFixed(1)}%`;
+            document.getElementById('kpiRevSplitBar').style.width = `${adsRevShare}%`;
+            document.getElementById('kpiAOV').textContent = fmtVND(kpi.aov);
+
+            // 2. Total Bookings & CIR
+            document.getElementById('kpiTotalBookings').textContent = fmtNum(kpi.totalBookings) + ' đơn';
+            const bookPct = target.bookings > 0 ? (kpi.totalBookings / target.bookings) * 100 : 0;
+            const bookDiff = Math.round(kpi.totalBookings - target.bookings);
+            document.getElementById('kpiBookTargetPct').textContent = `${bookPct.toFixed(1)}% mục tiêu`;
+            document.getElementById('kpiBookTargetPct').className = `font-bold ${bookPct >= 100 ? 'text-emerald-600' : 'text-indigo-600'}`;
+            document.getElementById('kpiBookVariance').textContent =
+                `MT: ${fmtNum(target.bookings)} (${bookDiff >= 0 ? '+' : ''}${bookDiff})`;
+            document.getElementById('kpiBookBar').style.width = `${Math.min(100, bookPct)}%`;
+
+            document.getElementById('kpiBookAds').textContent = fmtNum(kpi.adsBookings);
+            document.getElementById('kpiBookOrg').textContent = fmtNum(kpi.orgBookings);
+            document.getElementById('kpiBookAdsShare').textContent = kpi.totalBookings > 0 ? ((kpi.adsBookings / kpi.totalBookings) * 100).toFixed(1) + '%' : '0%';
+            document.getElementById('kpiBookOrgShare').textContent = kpi.totalBookings > 0 ? ((kpi.orgBookings / kpi.totalBookings) * 100).toFixed(1) + '%' : '0%';
+            document.getElementById('kpiCIR').textContent = fmtPct(kpi.cir, 2);
+
+            // 3. Ad Spend
+            document.getElementById('kpiAdSpend').textContent = fmtVND(kpi.adsSpend);
+            const spendPct = target.adSpend > 0 ? (kpi.adsSpend / target.adSpend) * 100 : 0;
+            document.getElementById('kpiSpendTargetPct').textContent = `${spendPct.toFixed(1)}% ngân sách`;
+            document.getElementById('kpiSpendTarget').textContent = `KH: ${fmtVND(target.adSpend, true)}`;
+            document.getElementById('kpiSpendBar').style.width = `${Math.min(100, spendPct)}%`;
+            document.getElementById('kpiCostPerQualChat').textContent = kpi.costPerQualChat !== null ? fmtVND(kpi.costPerQualChat) : '—';
+            document.getElementById('kpiAdsChats').textContent = `${fmtNum(kpi.adsChats)} (${fmtNum(kpi.adsQualChats)} đủ ĐK)`;
+
+            // 4. ROAS
+            const roasEl = document.getElementById('kpiROAS');
+            const roasBadge = document.getElementById('kpiROASBadge');
+            if (kpi.roas !== null) {
+                roasEl.textContent = kpi.roas.toFixed(2) + 'x';
+                const roasDiff = kpi.roas - target.roas;
+                roasBadge.textContent = `${roasDiff >= 0 ? '+' : ''}${roasDiff.toFixed(2)}x vs MT`;
+                roasBadge.className = `px-2 py-0.5 text-[11px] font-bold rounded-full ${roasDiff >= 0 ? 'bg-emerald-50 text-emerald-700' : 'bg-rose-50 text-rose-700'}`;
+            } else {
+                roasEl.textContent = '—';
+                roasBadge.textContent = 'Không có QC';
+                roasBadge.className = 'px-2 py-0.5 text-[11px] font-bold rounded-full bg-slate-100 text-slate-500';
+            }
+            document.getElementById('kpiROASTargetText').innerHTML = `Mục tiêu kế hoạch: <strong class="text-slate-800">${target.roas.toFixed(2)}x</strong>`;
+            document.getElementById('kpiAdsRev').textContent = fmtVND(kpi.adsRev, true);
+            document.getElementById('kpiAdsCTR').textContent = fmtPct(kpi.adsCtr, 2);
+
+            // 5. Closing Rate / Qualified Chats
+            document.getElementById('kpiCloseRate').textContent = fmtPct(kpi.closeRateTotal, 1);
+            const crDiff = (kpi.closeRateTotal - target.closeRate) * 100;
+            const crBadge = document.getElementById('kpiCloseRateBadge');
+            crBadge.textContent = `${crDiff >= 0 ? '+' : ''}${crDiff.toFixed(1)}đ% vs MT`;
+            crBadge.className = `px-2 py-0.5 text-[11px] font-bold rounded-full ${crDiff >= 0 ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700'}`;
+            document.getElementById('kpiQualChatSummary').innerHTML =
+                `Tổng trò chuyện đủ ĐK: <strong class="text-slate-800">${fmtNum(kpi.totalQualChats)}</strong> / ${fmtNum(kpi.totalChats)} tin nhắn`;
+            document.getElementById('kpiCloseAds').textContent = kpi.closeRateAds !== null ? fmtPct(kpi.closeRateAds, 1) : '—';
+            document.getElementById('kpiCloseOrg').textContent = kpi.closeRateOrg !== null ? fmtPct(kpi.closeRateOrg, 1) : '—';
+
+            // 6. Organic Views (STRICTLY SEPARATED: FB & TikTok)
+            document.getElementById('kpiFbViews').textContent = fmtNum(kpi.fbViews) + ' lượt xem';
+            document.getElementById('kpiFbFollows').textContent = fmtNum(kpi.fbFollows);
+            document.getElementById('kpiFbEngRate').textContent = `Tương tác: ${fmtPct(kpi.fbEngRate, 2)}`;
+
+            // Monthly Unique Viewers from Sheet 06_Nguoi_xem_theo_thang (NEVER summed across days)
+            const fbUniqueEl = document.getElementById('kpiFbUniqueMonth');
+            if (activeMonths.length === 1) {
+                const m = activeMonths[0];
+                fbUniqueEl.textContent = `${fmtNum(SHEET_06_NGUOI_XEM_THANG[m])} người (Tháng ${m})`;
+            } else {
+                const maxMonth = activeMonths.reduce((best, m) =>
+                    SHEET_06_NGUOI_XEM_THANG[m] > SHEET_06_NGUOI_XEM_THANG[best] ? m : best, activeMonths[0]);
+                fbUniqueEl.textContent = `Đỉnh T${maxMonth}: ${fmtNum(SHEET_06_NGUOI_XEM_THANG[maxMonth])} (Không cộng dồn)`;
+            }
+
+            document.getElementById('kpiTtViews').textContent = fmtNum(kpi.ttViews) + ' lượt xem';
+            document.getElementById('kpiTtEngRate').textContent = `Tương tác: ${fmtPct(kpi.ttEngRate, 2)}`;
+            const ttPct = target.ttViews > 0 ? (kpi.ttViews / target.ttViews) * 100 : 0;
+            document.getElementById('kpiTtTargetBadge').textContent = `${ttPct.toFixed(0)}% MT`;
+        }
+
+        // TIER 2 - CHART 1: Revenue Combo Chart (Stacked Ads + Organic vs Target Line)
+        function renderRevenueComboChart(data) {
+            const ctx = document.getElementById('revenueComboChart').getContext('2d');
+            if (revenueChartInstance) revenueChartInstance.destroy();
+
+            let labels = [];
+            let adsSeries = [];
+            let orgSeries = [];
+            let targetSeries = [];
+            let bucketKeys = []; // For cross-filtering when clicking month bars
+
+            if (state.trendGranularity === 'MONTH') {
+                const months = [5, 6, 7, 8];
+                months.forEach(m => {
+                    labels.push(`Tháng ${m}/2026`);
+                    bucketKeys.push(String(m));
+                    const aSum = data.adsRows.filter(r => r.month === m).reduce((s, r) => s + r.revenue, 0);
+                    const oSum = data.orgRows.filter(r => r.month === m).reduce((s, r) => s + r.revenue, 0);
+                    adsSeries.push(aSum / 1e6);
+                    orgSeries.push(oSum / 1e6);
+                    targetSeries.push(SHEET_07_MUC_TIEU[m].revenue / 1e6);
+                });
+            } else {
+                // Weekly aggregation across filtered range
+                const weekMap = new Map();
+                const filteredDates = ALL_DATES.filter(d => d.iso >= state.startDate && d.iso <= state.endDate);
+                filteredDates.forEach((d, idx) => {
+                    const weekNum = Math.floor(idx / 7) + 1;
+                    const key = `T${weekNum} (${d.iso.slice(8,10)}/${d.iso.slice(5,7)})`;
+                    if (!weekMap.has(weekNum)) {
+                        weekMap.set(weekNum, { label: key, dates: [], ads: 0, org: 0, target: 0 });
+                    }
+                    const wk = weekMap.get(weekNum);
+                    wk.dates.push(d.iso);
+                    wk.target += SHEET_07_MUC_TIEU[d.month].revenue / SHEET_07_MUC_TIEU[d.month].days;
+                });
+
+                data.adsRows.forEach(r => {
+                    for (const wk of weekMap.values()) {
+                        if (wk.dates.includes(r.date)) { wk.ads += r.revenue; break; }
+                    }
+                });
+                data.orgRows.forEach(r => {
+                    for (const wk of weekMap.values()) {
+                        if (wk.dates.includes(r.date)) { wk.org += r.revenue; break; }
+                    }
+                });
+
+                for (const wk of weekMap.values()) {
+                    labels.push(wk.label);
+                    bucketKeys.push(null);
+                    adsSeries.push(wk.ads / 1e6);
+                    orgSeries.push(wk.org / 1e6);
+                    targetSeries.push(wk.target / 1e6);
+                }
+            }
+
+            revenueChartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels,
+                    datasets: [
+                        {
+                            type: 'bar',
+                            label: 'Doanh thu QC Meta (Triệu ₫)',
+                            data: adsSeries,
+                            backgroundColor: '#0d9488',
+                            hoverBackgroundColor: '#0f766e',
+                            borderRadius: 6,
+                            stack: 'revenue',
+                            order: 2
+                        },
+                        {
+                            type: 'bar',
+                            label: 'Doanh thu Tự nhiên (Triệu ₫)',
+                            data: orgSeries,
+                            backgroundColor: '#f59e0b',
+                            hoverBackgroundColor: '#d97706',
+                            borderRadius: 6,
+                            stack: 'revenue',
+                            order: 2
+                        },
+                        {
+                            type: 'line',
+                            label: 'Mục tiêu doanh thu (07_Muc_tieu)',
+                            data: targetSeries,
+                            borderColor: '#ef4444',
+                            backgroundColor: '#ef4444',
+                            borderWidth: 2.5,
+                            borderDash: [6, 4],
+                            pointRadius: 4,
+                            pointHoverRadius: 6,
+                            tension: 0.25,
+                            fill: false,
+                            order: 1
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: { mode: 'index', intersect: false },
+                    onClick: (evt, elements) => {
+                        if (state.trendGranularity === 'MONTH' && elements.length > 0) {
+                            const idx = elements[0].index;
+                            const clickedMonth = bucketKeys[idx];
+                            if (clickedMonth) {
+                                // Toggle cross-filter on month
+                                if (state.monthQuick === clickedMonth) {
+                                    applyMonthQuick('ALL');
+                                } else {
+                                    applyMonthQuick(clickedMonth);
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: { usePointStyle: true, boxWidth: 8, font: { size: 11, family: 'Inter' } }
+                        },
+                        tooltip: {
+                            backgroundColor: '#0f172a',
+                            padding: 12,
+                            titleFont: { size: 12, weight: 'bold', family: 'Inter' },
+                            bodyFont: { size: 11, family: 'Inter' },
+                            callbacks: {
+                                label: (ctx) => `${ctx.dataset.label}: ${ctx.parsed.y.toFixed(1)} triệu ₫`,
+                                afterBody: (items) => {
+                                    const adsVal = items.find(i => i.datasetIndex === 0)?.parsed.y || 0;
+                                    const orgVal = items.find(i => i.datasetIndex === 1)?.parsed.y || 0;
+                                    const tgtVal = items.find(i => i.datasetIndex === 2)?.parsed.y || 0;
+                                    const tot = adsVal + orgVal;
+                                    const pct = tgtVal > 0 ? ((tot / tgtVal) * 100).toFixed(1) : '0.0';
+                                    return `\nTổng thực tế: ${tot.toFixed(1)} triệu ₫ (${pct}% mục tiêu)`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            stacked: true,
+                            grid: { display: false },
+                            ticks: { font: { size: 11, family: 'Inter' } }
+                        },
+                        y: {
+                            stacked: true,
+                            beginAtZero: true,
+                            grid: { color: '#f1f5f9' },
+                            ticks: {
+                                font: { size: 11, family: 'Inter' },
+                                callback: (v) => v + ' tr'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // TIER 2 - CHART 2: Multi-line Organic Daily Views (FB vs TikTok with July Spike Annotations)
+        function renderOrganicTrendChart(data) {
+            const ctx = document.getElementById('organicTrendChart').getContext('2d');
+            if (organicChartInstance) organicChartInstance.destroy();
+
+            const labels = data.fbRows.map(r => `${r.date.slice(8,10)}/${r.date.slice(5,7)}`);
+            const fbSeries = data.fbRows.map(r => r.views);
+            const ttSeries = data.ttRows.map(r => r.views);
+
+            // Check if July spikes are within currently filtered date range
+            const idxSpike1 = data.fbRows.findIndex(r => r.date === '2026-07-08');
+            const idxSpike2 = data.fbRows.findIndex(r => r.date === '2026-07-19');
+
+            const annotations = {};
+            if (idxSpike1 !== -1) {
+                annotations.spike1 = {
+                    type: 'point',
+                    xValue: idxSpike1,
+                    yValue: ttSeries[idxSpike1],
+                    yScaleID: 'yTikTok',
+                    backgroundColor: 'rgba(244, 63, 94, 0.25)',
+                    borderColor: '#e11d48',
+                    borderWidth: 2,
+                    radius: 7
+                };
+                annotations.spike1Label = {
+                    type: 'label',
+                    xValue: idxSpike1,
+                    yValue: ttSeries[idxSpike1],
+                    yScaleID: 'yTikTok',
+                    yAdjust: -24,
+                    backgroundColor: 'rgba(15, 23, 42, 0.88)',
+                    color: '#fff',
+                    borderRadius: 6,
+                    padding: { x: 6, y: 3 },
+                    font: { size: 10, weight: 'bold', family: 'Inter' },
+                    content: ['08/07: Viral Hồ bơi vô cực']
+                };
+            }
+            if (idxSpike2 !== -1) {
+                annotations.spike2 = {
+                    type: 'point',
+                    xValue: idxSpike2,
+                    yValue: ttSeries[idxSpike2],
+                    yScaleID: 'yTikTok',
+                    backgroundColor: 'rgba(244, 63, 94, 0.25)',
+                    borderColor: '#e11d48',
+                    borderWidth: 2,
+                    radius: 7
+                };
+                annotations.spike2Label = {
+                    type: 'label',
+                    xValue: idxSpike2,
+                    yValue: ttSeries[idxSpike2],
+                    yScaleID: 'yTikTok',
+                    yAdjust: -22,
+                    backgroundColor: 'rgba(15, 23, 42, 0.88)',
+                    color: '#fff',
+                    borderRadius: 6,
+                    padding: { x: 6, y: 3 },
+                    font: { size: 10, weight: 'bold', family: 'Inter' },
+                    content: ['19/07: Sunset BBQ Flash Sale']
+                };
+            }
+
+            organicChartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels,
+                    datasets: [
+                        {
+                            label: 'Lượt xem trang Facebook',
+                            data: fbSeries,
+                            borderColor: '#2563eb',
+                            backgroundColor: 'rgba(37, 99, 235, 0.08)',
+                            borderWidth: 2,
+                            pointRadius: labels.length <= 35 ? 2.5 : 0,
+                            pointHoverRadius: 5,
+                            tension: 0.3,
+                            fill: true,
+                            yAxisID: 'yFB'
+                        },
+                        {
+                            label: 'Lượt xem video TikTok',
+                            data: ttSeries,
+                            borderColor: '#f43f5e',
+                            backgroundColor: 'rgba(244, 63, 94, 0.06)',
+                            borderWidth: 2,
+                            pointRadius: labels.length <= 35 ? 2.5 : 0,
+                            pointHoverRadius: 5,
+                            tension: 0.3,
+                            fill: false,
+                            yAxisID: 'yTikTok'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: { mode: 'index', intersect: false },
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: { usePointStyle: true, boxWidth: 8, font: { size: 11, family: 'Inter' } }
+                        },
+                        annotation: { annotations },
+                        tooltip: {
+                            backgroundColor: '#0f172a',
+                            padding: 10,
+                            callbacks: {
+                                label: (ctx) => `${ctx.dataset.label}: ${fmtNum(ctx.parsed.y)} lượt`
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: { display: false },
+                            ticks: { maxTicksLimit: 10, font: { size: 10, family: 'Inter' } }
+                        },
+                        yFB: {
+                            type: 'linear',
+                            position: 'left',
+                            beginAtZero: true,
+                            grid: { color: '#f1f5f9' },
+                            title: { display: true, text: 'Facebook', color: '#2563eb', font: { size: 10, weight: 'bold' } },
+                            ticks: {
+                                font: { size: 10 },
+                                color: '#2563eb',
+                                callback: (v) => fmtNum(v, true)
+                            }
+                        },
+                        yTikTok: {
+                            type: 'linear',
+                            position: 'right',
+                            beginAtZero: true,
+                            grid: { drawOnChartArea: false },
+                            title: { display: true, text: 'TikTok', color: '#f43f5e', font: { size: 10, weight: 'bold' } },
+                            ticks: {
+                                font: { size: 10 },
+                                color: '#f43f5e',
+                                callback: (v) => fmtNum(v, true)
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // TIER 3 - LEFT: Conversion Funnel Comparison (Ads vs Organic)
+        function renderFunnelComparison(data) {
+            const { kpi } = data;
+            const container = document.getElementById('funnelContainer');
+
+            const buildFunnelBlock = (title, accentBg, accentBar, chats, qual, bookings, isEmpty) => {
+                if (isEmpty || chats === 0) {
+                    return `
+                        <div class="p-3.5 rounded-xl border border-slate-100 bg-slate-50/70">
+                            <div class="text-xs font-bold text-slate-400">${title}</div>
+                            <p class="text-[11px] text-slate-400 mt-1">Không có dữ liệu trong bộ lọc hiện tại.</p>
+                        </div>
+                    `;
+                }
+                const qualRate = qual / chats;
+                const drop1 = 1 - qualRate;
+                const closeRate = qual > 0 ? bookings / qual : 0;
+                const drop2 = 1 - closeRate;
+                const endToEnd = bookings / chats;
+
+                return `
+                    <div class="p-3.5 rounded-xl border border-slate-200/80 ${accentBg}">
+                        <div class="flex items-center justify-between mb-2.5">
+                            <span class="text-xs font-bold text-slate-900">${title}</span>
+                            <span class="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-white border border-slate-200 text-slate-700">
+                                Chuyển đổi toàn phễu: <strong>${fmtPct(endToEnd, 1)}</strong>
+                            </span>
+                        </div>
+                        <div class="space-y-2">
+                            <!-- Step 1 -->
+                            <div>
+                                <div class="flex justify-between text-[11px] mb-0.5">
+                                    <span class="font-medium text-slate-600">1. Tổng cuộc trò chuyện</span>
+                                    <span class="font-bold text-slate-900">${fmtNum(chats)} (100%)</span>
+                                </div>
+                                <div class="w-full h-5 bg-white rounded-md overflow-hidden border border-slate-200/60">
+                                    <div class="h-full ${accentBar} opacity-95 rounded-md" style="width: 100%"></div>
+                                </div>
+                            </div>
+
+                            <!-- Step 2 -->
+                            <div>
+                                <div class="flex justify-between text-[11px] mb-0.5">
+                                    <span class="font-medium text-slate-600">2. Trò chuyện đủ điều kiện</span>
+                                    <span class="font-bold text-slate-900">
+                                        ${fmtNum(qual)} <span class="text-emerald-700">(${fmtPct(qualRate, 1)})</span>
+                                        <span class="text-rose-500 font-normal ml-1">↓ rớt ${fmtPct(drop1, 1)}</span>
+                                    </span>
+                                </div>
+                                <div class="w-full h-5 bg-white rounded-md overflow-hidden border border-slate-200/60">
+                                    <div class="h-full ${accentBar} opacity-75 rounded-md transition-all duration-500" style="width: ${(qualRate * 100).toFixed(1)}%"></div>
+                                </div>
+                            </div>
+
+                            <!-- Step 3 -->
+                            <div>
+                                <div class="flex justify-between text-[11px] mb-0.5">
+                                    <span class="font-medium text-slate-600">3. Đặt phòng thành công</span>
+                                    <span class="font-bold text-slate-900">
+                                        ${fmtNum(bookings)} <span class="text-emerald-700">(${fmtPct(closeRate, 1)} từ đủ ĐK)</span>
+                                        <span class="text-rose-500 font-normal ml-1">↓ rớt ${fmtPct(drop2, 1)}</span>
+                                    </span>
+                                </div>
+                                <div class="w-full h-5 bg-white rounded-md overflow-hidden border border-slate-200/60">
+                                    <div class="h-full ${accentBar} opacity-55 rounded-md transition-all duration-500" style="width: ${Math.max(4, (endToEnd * 100)).toFixed(1)}%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            };
+
+            container.innerHTML =
+                buildFunnelBlock('Nguồn Quảng cáo Meta (03_QC)', 'bg-teal-50/40', 'bg-teal-600', kpi.adsChats, kpi.adsQualChats, kpi.adsBookings, !data.includeAds) +
+                buildFunnelBlock('Nguồn Tự nhiên (04_Tu_nhien)', 'bg-amber-50/40', 'bg-amber-500', kpi.orgChats, kpi.orgQualChats, kpi.orgBookings, !data.includeOrganic);
+
+            // Funnel Insight
+            const insightEl = document.getElementById('funnelInsightBox');
+            if (kpi.adsQualChats > 0 && kpi.orgQualChats > 0) {
+                const adsQualRate = kpi.adsQualChats / kpi.adsChats;
+                const orgQualRate = kpi.orgQualChats / kpi.orgChats;
+                const gapClose = ((kpi.closeRateOrg - kpi.closeRateAds) * 100).toFixed(1);
+                insightEl.innerHTML = `
+                    <strong class="flex items-center gap-1.5 text-amber-900 mb-1">
+                        <i data-lucide="alert-triangle" class="w-3.5 h-3.5 text-amber-600"></i> Chẩn đoán điểm nghẽn phễu:
+                    </strong>
+                    Nguồn Tự nhiên có tỷ lệ lọc đủ điều kiện đạt <strong>${fmtPct(orgQualRate, 1)}</strong> và tỷ lệ chốt cao hơn QC Meta <strong>${gapClose} điểm %</strong>.
+                    Ở nguồn QC Meta, tỷ lệ rớt khách lớn nhất nằm ở khâu <strong>lọc tin nhắn đủ điều kiện (${fmtPct(1 - adsQualRate, 1)} rớt)</strong> — cần tối ưu câu hỏi tự động đầu phễu và kịch bản tư vấn sale trong 5 phút đầu.
+                `;
+            } else {
+                insightEl.innerHTML = `
+                    <strong>Chẩn đoán phễu:</strong> Đang xem đơn nguồn. Chọn <em>Tất cả nguồn</em> để so sánh trực tiếp tỷ lệ rớt khách giữa Quảng cáo Meta và Tự nhiên.
+                `;
+            }
+        }
+
+        // Helper: Group Ads Rows by AdSet, Campaign, or Combined
+        function aggregateAdsBy(adsRows, mode) {
+            const map = new Map();
+            adsRows.forEach(r => {
+                let key, name, subLabel, filterType, filterVal;
+                if (mode === 'ADSET') {
+                    key = r.adSet;
+                    name = r.adSet;
+                    subLabel = 'Nhóm quảng cáo';
+                    filterType = 'ADSET';
+                    filterVal = r.adSet;
+                } else if (mode === 'CAMPAIGN') {
+                    key = r.campaign;
+                    name = SHEET_05_DANH_MUC.campaigns[r.campaign].shortName;
+                    subLabel = SHEET_05_DANH_MUC.campaigns[r.campaign].fullName;
+                    filterType = 'CAMPAIGN';
+                    filterVal = r.campaign;
+                } else {
+                    key = `${r.campaign}__${r.adSet}`;
+                    name = `${SHEET_05_DANH_MUC.campaigns[r.campaign].shortName} • ${r.adSet}`;
+                    subLabel = SHEET_05_DANH_MUC.campaigns[r.campaign].fullName;
+                    filterType = 'COMBINED';
+                    filterVal = { campaign: r.campaign, adSet: r.adSet };
+                }
+
+                if (!map.has(key)) {
+                    map.set(key, {
+                        key, name, subLabel, filterType, filterVal,
+                        spend: 0, impressions: 0, clicks: 0, chats: 0, qualChats: 0, bookings: 0, revenue: 0
+                    });
+                }
+                const g = map.get(key);
+                g.spend += r.spend;
+                g.impressions += r.impressions;
+                g.clicks += r.clicks;
+                g.chats += r.chats;
+                g.qualChats += r.qualChats;
+                g.bookings += r.bookings;
+                g.revenue += r.revenue;
+            });
+
+            return Array.from(map.values()).map(g => ({
+                ...g,
+                cpqc: g.qualChats > 0 ? g.spend / g.qualChats : 0,
+                closeRate: g.qualChats > 0 ? g.bookings / g.qualChats : 0,
+                roas: g.spend > 0 ? g.revenue / g.spend : 0
+            }));
+        }
+
+        // TIER 3 - RIGHT: Grouped Horizontal Bar Chart
+        function renderSegmentBarChart(data) {
+            const ctx = document.getElementById('segmentBarChart').getContext('2d');
+            if (segmentBarChartInstance) segmentBarChartInstance.destroy();
+
+            // Always show all segments for comparison unless user specifically filtered source to ORGANIC
+            const baseAds = state.source === 'ORGANIC'
+                ? []
+                : SHEET_03_ADS.filter(r =>
+                    r.date >= state.startDate && r.date <= state.endDate &&
+                    (state.barDimension === 'ADSET' ? (state.campaign === 'ALL' || r.campaign === state.campaign) : (state.adSet === 'ALL' || r.adSet === state.adSet))
+                );
+
+            const groups = aggregateAdsBy(baseAds, state.barDimension).sort((a, b) => b.roas - a.roas);
+
+            const labels = groups.map(g => g.name);
+            const revData = groups.map(g => g.revenue / 1e6);
+            const spendData = groups.map(g => g.spend / 1e6);
+            const roasData = groups.map(g => g.roas);
+
+            segmentBarChartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels,
+                    datasets: [
+                        {
+                            label: 'Doanh thu QC (Triệu ₫)',
+                            data: revData,
+                            backgroundColor: groups.map(g => {
+                                const isSelected = (state.barDimension === 'ADSET' && state.adSet === g.filterVal) ||
+                                                   (state.barDimension === 'CAMPAIGN' && state.campaign === g.filterVal);
+                                return isSelected ? '#0f766e' : '#14b8a6';
+                            }),
+                            borderRadius: 6,
+                            xAxisID: 'xMoney'
+                        },
+                        {
+                            label: 'Chi phí QC (Triệu ₫)',
+                            data: spendData,
+                            backgroundColor: '#94a3b8',
+                            borderRadius: 6,
+                            xAxisID: 'xMoney'
+                        },
+                        {
+                            label: 'ROAS (Lần)',
+                            data: roasData,
+                            backgroundColor: '#f59e0b',
+                            borderRadius: 6,
+                            xAxisID: 'xRoas'
+                        }
+                    ]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: { mode: 'index', intersect: false },
+                    onClick: (evt, elements) => {
+                        if (elements.length > 0) {
+                            const idx = elements[0].index;
+                            const clicked = groups[idx];
+                            if (!clicked) return;
+                            if (state.barDimension === 'ADSET') {
+                                state.adSet = (state.adSet === clicked.filterVal) ? 'ALL' : clicked.filterVal;
+                                document.getElementById('filterAdSet').value = state.adSet;
+                            } else {
+                                state.campaign = (state.campaign === clicked.filterVal) ? 'ALL' : clicked.filterVal;
+                                document.getElementById('filterCampaign').value = state.campaign;
+                            }
+                            renderDashboard();
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: { usePointStyle: true, boxWidth: 8, font: { size: 11, family: 'Inter' } }
+                        },
+                        tooltip: {
+                            backgroundColor: '#0f172a',
+                            padding: 12,
+                            callbacks: {
+                                label: (ctx) => {
+                                    if (ctx.datasetIndex === 2) return `ROAS: ${ctx.parsed.x.toFixed(2)}x`;
+                                    return `${ctx.dataset.label}: ${ctx.parsed.x.toFixed(1)} triệu ₫`;
+                                },
+                                afterBody: (items) => {
+                                    const g = groups[items[0].dataIndex];
+                                    if (!g) return '';
+                                    return `\nTrò chuyện đủ ĐK: ${fmtNum(g.qualChats)}\nCP / TC đủ ĐK: ${fmtVND(g.cpqc)}\nĐặt phòng: ${fmtNum(g.bookings)} (Chốt ${fmtPct(g.closeRate, 1)})`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            grid: { display: false },
+                            ticks: { font: { size: 12, weight: '600', family: 'Inter' } }
+                        },
+                        xMoney: {
+                            type: 'linear',
+                            position: 'bottom',
+                            beginAtZero: true,
+                            grid: { color: '#f1f5f9' },
+                            title: { display: true, text: 'Triệu VNĐ', font: { size: 10 } },
+                            ticks: { callback: (v) => v + ' tr', font: { size: 10 } }
+                        },
+                        xRoas: {
+                            type: 'linear',
+                            position: 'top',
+                            beginAtZero: true,
+                            grid: { drawOnChartArea: false },
+                            title: { display: true, text: 'ROAS (x)', color: '#d97706', font: { size: 10, weight: 'bold' } },
+                            ticks: { color: '#d97706', callback: (v) => v + 'x', font: { size: 10 } }
+                        }
+                    }
+                }
+            });
+        }
+
+        // TIER 3 - BOTTOM: Sortable Diagnostic Table
+        function renderDiagnosticTable(data) {
+            const tbody = document.getElementById('diagnosticTableBody');
+            const tfoot = document.getElementById('diagnosticTableFoot');
+
+            const groups = aggregateAdsBy(data.adsRows, state.tableMode);
+
+            // Sort groups
+            groups.sort((a, b) => {
+                const col = state.sortCol;
+                const dir = state.sortDir === 'asc' ? 1 : -1;
+                if (col === 'name') return a.name.localeCompare(b.name, 'vi') * dir;
+                return ((a[col] || 0) - (b[col] || 0)) * dir;
+            });
+
+            if (groups.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="8" class="py-8 text-center text-slate-400">Không có dữ liệu Quảng cáo Meta trong bộ lọc hiện tại.</td></tr>`;
+                tfoot.innerHTML = '';
+                return;
+            }
+
+            tbody.innerHTML = groups.map(g => {
+                const roasColor = g.roas >= 10.5 ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                                : g.roas >= 8.0 ? 'bg-amber-50 text-amber-700 border-amber-200'
+                                : 'bg-rose-50 text-rose-700 border-rose-200';
+                const isSelected = (g.filterType === 'ADSET' && state.adSet === g.filterVal) ||
+                                   (g.filterType === 'CAMPAIGN' && state.campaign === g.filterVal);
+                return `
+                    <tr class="hover:bg-teal-50/40 cursor-pointer transition ${isSelected ? 'bg-teal-50/70' : ''}"
+                        data-ftype="${g.filterType}" data-fval='${JSON.stringify(g.filterVal)}'>
+                        <td class="py-3 px-4">
+                            <div class="font-bold text-slate-900">${g.name}</div>
+                            <div class="text-[11px] text-slate-400 truncate max-w-[260px]">${g.subLabel}</div>
+                        </td>
+                        <td class="py-3 px-4 text-right font-medium text-slate-700">${fmtVND(g.spend)}</td>
+                        <td class="py-3 px-4 text-right font-semibold text-slate-800">${fmtNum(g.qualChats)}</td>
+                        <td class="py-3 px-4 text-right text-slate-700">${fmtVND(g.cpqc)}</td>
+                        <td class="py-3 px-4 text-right font-semibold text-slate-900">${fmtNum(g.bookings)}</td>
+                        <td class="py-3 px-4 text-right font-semibold ${g.closeRate >= 0.20 ? 'text-emerald-700' : 'text-amber-700'}">${fmtPct(g.closeRate, 1)}</td>
+                        <td class="py-3 px-4 text-right font-bold text-teal-800">${fmtVND(g.revenue)}</td>
+                        <td class="py-3 px-4 text-right">
+                            <span class="inline-block px-2.5 py-0.5 rounded-full font-bold border ${roasColor}">
+                                ${g.roas.toFixed(2)}x
+                            </span>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+
+            // Attach row click for cross-filtering
+            tbody.querySelectorAll('tr').forEach(tr => {
+                tr.addEventListener('click', () => {
+                    const ftype = tr.getAttribute('data-ftype');
+                    const fval = JSON.parse(tr.getAttribute('data-fval'));
+                    if (ftype === 'ADSET') {
+                        state.adSet = state.adSet === fval ? 'ALL' : fval;
+                        document.getElementById('filterAdSet').value = state.adSet;
+                    } else if (ftype === 'CAMPAIGN') {
+                        state.campaign = state.campaign === fval ? 'ALL' : fval;
+                        document.getElementById('filterCampaign').value = state.campaign;
+                    } else if (ftype === 'COMBINED') {
+                        state.campaign = fval.campaign;
+                        state.adSet = fval.adSet;
+                        document.getElementById('filterCampaign').value = state.campaign;
+                        document.getElementById('filterAdSet').value = state.adSet;
+                    }
+                    renderDashboard();
+                });
+            });
+
+            // Footer totals (strictly Sum / Sum)
+            const totSpend = groups.reduce((s, g) => s + g.spend, 0);
+            const totQual = groups.reduce((s, g) => s + g.qualChats, 0);
+            const totBook = groups.reduce((s, g) => s + g.bookings, 0);
+            const totRev = groups.reduce((s, g) => s + g.revenue, 0);
+            const totCpqc = totQual > 0 ? totSpend / totQual : 0;
+            const totClose = totQual > 0 ? totBook / totQual : 0;
+            const totRoas = totSpend > 0 ? totRev / totSpend : 0;
+
+            tfoot.innerHTML = `
+                <tr>
+                    <td class="py-3 px-4 text-slate-900">TỔNG CỘNG (Tổng tử ÷ Tổng mẫu)</td>
+                    <td class="py-3 px-4 text-right text-slate-900">${fmtVND(totSpend)}</td>
+                    <td class="py-3 px-4 text-right text-slate-900">${fmtNum(totQual)}</td>
+                    <td class="py-3 px-4 text-right text-slate-900">${fmtVND(totCpqc)}</td>
+                    <td class="py-3 px-4 text-right text-slate-900">${fmtNum(totBook)}</td>
+                    <td class="py-3 px-4 text-right text-slate-900">${fmtPct(totClose, 1)}</td>
+                    <td class="py-3 px-4 text-right text-teal-800">${fmtVND(totRev)}</td>
+                    <td class="py-3 px-4 text-right text-teal-900">${totRoas.toFixed(2)}x</td>
+                </tr>
+            `;
+
+            // Update sort indicators
+            document.querySelectorAll('.sortable-th').forEach(th => {
+                const col = th.getAttribute('data-sort');
+                const icon = th.querySelector('.sort-icon');
+                if (col === state.sortCol) {
+                    icon.textContent = state.sortDir === 'asc' ? '↑' : '↓';
+                    icon.classList.add('text-teal-600');
+                } else {
+                    icon.textContent = '↕';
+                    icon.classList.remove('text-teal-600');
+                }
+            });
+        }
+
+        // EXECUTIVE DECISION INSIGHTS
+        function renderExecutiveInsights(data) {
+            const { kpi } = data;
+            const adSetStats = aggregateAdsBy(
+                SHEET_03_ADS.filter(r => r.date >= state.startDate && r.date <= state.endDate),
+                'ADSET'
+            ).sort((a, b) => b.roas - a.roas);
+
+            const bestSet = adSetStats[0];
+            const worstSet = adSetStats[adSetStats.length - 1];
+
+            const html = `
+                <div class="bg-white/5 border border-white/10 rounded-xl p-4">
+                    <div class="text-teal-300 font-bold mb-1.5 flex items-center gap-1.5">
+                        <i data-lucide="wallet" class="w-4 h-4"></i> 1. Tái phân bổ ngân sách Meta Ads
+                    </div>
+                    <p class="text-slate-300">
+                        ${bestSet && worstSet
+                            ? `Nhóm <strong class="text-white">${bestSet.name}</strong> đạt ROAS cao nhất (<strong class="text-teal-300">${bestSet.roas.toFixed(2)}x</strong>), vượt trội so với <strong class="text-white">${worstSet.name}</strong> (<strong class="text-rose-300">${worstSet.roas.toFixed(2)}x</strong>). Đề xuất dịch chuyển 15–20% ngân sách từ ${worstSet.name} sang ${bestSet.name} & nhóm Nữ 25-44 để tối ưu lợi nhuận.`
+                            : 'Chọn khoảng thời gian có chạy quảng cáo (từ 05/05) để xem khuyến nghị phân bổ ngân sách.'}
+                    </p>
+                </div>
+                <div class="bg-white/5 border border-white/10 rounded-xl p-4">
+                    <div class="text-amber-300 font-bold mb-1.5 flex items-center gap-1.5">
+                        <i data-lucide="funnel" class="w-4 h-4"></i> 2. Tối ưu kịch bản chốt sale Inbox
+                    </div>
+                    <p class="text-slate-300">
+                        Tỷ lệ chốt trên trò chuyện đủ ĐK toàn khách sạn đạt <strong class="text-white">${fmtPct(kpi.closeRateTotal, 1)}</strong>
+                        ${kpi.closeRateAds !== null && kpi.closeRateOrg !== null
+                            ? `(QC Meta: ${fmtPct(kpi.closeRateAds, 1)} vs Tự nhiên: ${fmtPct(kpi.closeRateOrg, 1)}). Cần thiết lập bộ câu hỏi lọc nhu cầu tự động và gửi báo giá combo phòng + đưa đón trong 5 phút đầu cho nguồn QC.`
+                            : '. Tiếp tục chuẩn hóa kịch bản tư vấn combo theo mùa để nâng cao AOV.'}
+                    </p>
+                </div>
+                <div class="bg-white/5 border border-white/10 rounded-xl p-4">
+                    <div class="text-rose-300 font-bold mb-1.5 flex items-center gap-1.5">
+                        <i data-lucide="video" class="w-4 h-4"></i> 3. Nhịp độ nội dung FB & TikTok
+                    </div>
+                    <p class="text-slate-300">
+                        TikTok đạt <strong class="text-white">${fmtNum(kpi.ttViews, true)}</strong> lượt xem (tương tác <strong class="text-rose-300">${fmtPct(kpi.ttEngRate, 2)}</strong>) và Facebook đạt <strong class="text-white">${fmtNum(kpi.fbViews, true)}</strong> lượt xem (+${fmtNum(kpi.fbFollows)} theo dõi). Nhân bản định dạng video review hồ bơi & Sunset BBQ (tạo đỉnh Tháng 7) vào khung cuối tuần cho mùa Thu-Đông.
+                    </p>
+                </div>
+            `;
+            document.getElementById('executiveInsightsGrid').innerHTML = html;
+        }
+
+        /* =========================================================================
+           5. EVENT LISTENERS & INTERACTIONS
+           ========================================================================= */
+        function applyMonthQuick(monthVal) {
+            state.monthQuick = monthVal;
+            if (monthVal === 'ALL') {
+                state.startDate = '2026-05-01';
+                state.endDate = '2026-08-31';
+            } else {
+                const m = String(monthVal).padStart(2, '0');
+                const lastDay = SHEET_07_MUC_TIEU[Number(monthVal)].days;
+                state.startDate = `2026-${m}-01`;
+                state.endDate = `2026-${m}-${lastDay}`;
+            }
+            document.getElementById('filterStartDate').value = state.startDate;
+            document.getElementById('filterEndDate').value = state.endDate;
+
+            document.querySelectorAll('.month-pill').forEach(btn => {
+                btn.classList.toggle('filter-pill-active', btn.getAttribute('data-month') === monthVal);
+            });
+            renderDashboard();
+        }
+
+        function resetAllFilters() {
+            state.monthQuick = 'ALL';
+            state.startDate = '2026-05-01';
+            state.endDate = '2026-08-31';
+            state.source = 'ALL';
+            state.campaign = 'ALL';
+            state.adSet = 'ALL';
+
+            document.getElementById('filterStartDate').value = state.startDate;
+            document.getElementById('filterEndDate').value = state.endDate;
+            document.getElementById('filterSource').value = 'ALL';
+            document.getElementById('filterCampaign').value = 'ALL';
+            document.getElementById('filterAdSet').value = 'ALL';
+
+            document.querySelectorAll('.month-pill').forEach(btn => {
+                btn.classList.toggle('filter-pill-active', btn.getAttribute('data-month') === 'ALL');
+            });
+            renderDashboard();
+        }
+
+        // Bind DOM events on load
+        window.addEventListener('DOMContentLoaded', () => {
+            // Month pills
+            document.querySelectorAll('.month-pill').forEach(btn => {
+                btn.addEventListener('click', () => applyMonthQuick(btn.getAttribute('data-month')));
+            });
+
+            // Custom Date inputs
+            const startInput = document.getElementById('filterStartDate');
+            const endInput = document.getElementById('filterEndDate');
+            const handleCustomDate = () => {
+                if (startInput.value && endInput.value && startInput.value <= endInput.value) {
+                    state.startDate = startInput.value;
+                    state.endDate = endInput.value;
+                    state.monthQuick = 'CUSTOM';
+                    document.querySelectorAll('.month-pill').forEach(b => b.classList.remove('filter-pill-active'));
+                    renderDashboard();
+                }
+            };
+            startInput.addEventListener('change', handleCustomDate);
+            endInput.addEventListener('change', handleCustomDate);
+
+            // Segment Dropdowns
+            document.getElementById('filterSource').addEventListener('change', (e) => {
+                state.source = e.target.value;
+                renderDashboard();
+            });
+            document.getElementById('filterCampaign').addEventListener('change', (e) => {
+                state.campaign = e.target.value;
+                renderDashboard();
+            });
+            document.getElementById('filterAdSet').addEventListener('change', (e) => {
+                state.adSet = e.target.value;
+                renderDashboard();
+            });
+
+            // Reset buttons
+            document.getElementById('btnResetFilters').addEventListener('click', resetAllFilters);
+            document.getElementById('btnClearChips').addEventListener('click', resetAllFilters);
+
+            // Granularity Toggle (Month / Week)
+            const btnGranMonth = document.getElementById('btnGranMonth');
+            const btnGranWeek = document.getElementById('btnGranWeek');
+            btnGranMonth.addEventListener('click', () => {
+                state.trendGranularity = 'MONTH';
+                btnGranMonth.className = 'px-3 py-1 text-xs font-semibold rounded-lg bg-white text-slate-900 shadow-sm transition';
+                btnGranWeek.className = 'px-3 py-1 text-xs font-semibold rounded-lg text-slate-600 hover:text-slate-900 transition';
+                renderDashboard();
+            });
+            btnGranWeek.addEventListener('click', () => {
+                state.trendGranularity = 'WEEK';
+                btnGranWeek.className = 'px-3 py-1 text-xs font-semibold rounded-lg bg-white text-slate-900 shadow-sm transition';
+                btnGranMonth.className = 'px-3 py-1 text-xs font-semibold rounded-lg text-slate-600 hover:text-slate-900 transition';
+                renderDashboard();
+            });
+
+            // Bar Chart Dimension Toggle (AdSet / Campaign)
+            const btnDimAdSet = document.getElementById('btnDimAdSet');
+            const btnDimCampaign = document.getElementById('btnDimCampaign');
+            btnDimAdSet.addEventListener('click', () => {
+                state.barDimension = 'ADSET';
+                btnDimAdSet.className = 'px-3 py-1 text-xs font-semibold rounded-lg bg-white text-slate-900 shadow-sm transition';
+                btnDimCampaign.className = 'px-3 py-1 text-xs font-semibold rounded-lg text-slate-600 hover:text-slate-900 transition';
+                renderDashboard();
+            });
+            btnDimCampaign.addEventListener('click', () => {
+                state.barDimension = 'CAMPAIGN';
+                btnDimCampaign.className = 'px-3 py-1 text-xs font-semibold rounded-lg bg-white text-slate-900 shadow-sm transition';
+                btnDimAdSet.className = 'px-3 py-1 text-xs font-semibold rounded-lg text-slate-600 hover:text-slate-900 transition';
+                renderDashboard();
+            });
+
+            // Table Mode Toggle
+            const setTableBtnStyles = (activeId) => {
+                ['btnTableAdSet', 'btnTableCampaign', 'btnTableCombined'].forEach(id => {
+                    const el = document.getElementById(id);
+                    el.className = id === activeId
+                        ? 'px-3 py-1 text-xs font-semibold rounded-lg bg-white text-slate-900 shadow-sm transition'
+                        : 'px-3 py-1 text-xs font-semibold rounded-lg text-slate-600 hover:text-slate-900 transition';
+                });
+            };
+            document.getElementById('btnTableAdSet').addEventListener('click', () => {
+                state.tableMode = 'ADSET'; setTableBtnStyles('btnTableAdSet'); renderDashboard();
+            });
+            document.getElementById('btnTableCampaign').addEventListener('click', () => {
+                state.tableMode = 'CAMPAIGN'; setTableBtnStyles('btnTableCampaign'); renderDashboard();
+            });
+            document.getElementById('btnTableCombined').addEventListener('click', () => {
+                state.tableMode = 'COMBINED'; setTableBtnStyles('btnTableCombined'); renderDashboard();
+            });
+
+            // Sortable Table Headers
+            document.querySelectorAll('.sortable-th').forEach(th => {
+                th.addEventListener('click', () => {
+                    const col = th.getAttribute('data-sort');
+                    if (state.sortCol === col) {
+                        state.sortDir = state.sortDir === 'asc' ? 'desc' : 'asc';
+                    } else {
+                        state.sortCol = col;
+                        state.sortDir = 'desc';
+                    }
+                    renderDashboard();
+                });
+            });
+
+            // Rules Modal
+            const rulesModal = document.getElementById('rulesModal');
+            const toggleModal = (show) => {
+                rulesModal.classList.toggle('hidden', !show);
+                rulesModal.classList.toggle('flex', show);
+            };
+            document.getElementById('btnRulesModal').addEventListener('click', () => toggleModal(true));
+            document.getElementById('btnCloseRules').addEventListener('click', () => toggleModal(false));
+            document.getElementById('btnCloseRulesFooter').addEventListener('click', () => toggleModal(false));
+            rulesModal.addEventListener('click', (e) => { if (e.target === rulesModal) toggleModal(false); });
+
+            // Initial Render
+            renderDashboard();
+        });
+    </script>
+</body>
+</html>
